@@ -22,7 +22,7 @@ namespace Game1.GameObjects
     [XmlInclude(typeof(Ninja1))]
     [XmlInclude(typeof(Zombie1))]
     [XmlInclude(typeof(Zombie2))]
-    [XmlInclude(typeof(FireEffect))]
+    //[XmlInclude(typeof(FireEffect))]
     [XmlInclude(typeof(MovingPlatform))]
 
     public abstract class GameObject : IEditableGameObject, ICustomTypeDescriptor
