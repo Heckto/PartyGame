@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PartyGame": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\Heckto\\Desktop\\AssMastery\\PartyGame\\PartyGame\\bin\\Debug\\netcoreapp3.1\\Content\\level5.xml"
+    }
+  }
+}

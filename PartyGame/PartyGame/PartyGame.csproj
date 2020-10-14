@@ -1,0 +1,88 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <TieredCompilation>false</TieredCompilation>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Content\bin\**" />
+    <Compile Remove="Content\Characters\**" />
+    <Compile Remove="Content\Effects\**" />
+    <Compile Remove="Content\Font\**" />
+    <Compile Remove="Content\Level1\**" />
+    <Compile Remove="Content\Misc\**" />
+    <Compile Remove="Content\Music\**" />
+    <Compile Remove="Content\obj\**" />
+    <Compile Remove="Content\ParticleEffects\**" />
+    <Compile Remove="Content\Particles\**" />
+    <Compile Remove="Content\Scripts\**" />
+    <Compile Remove="Content\SFX\**" />
+    <EmbeddedResource Remove="Content\bin\**" />
+    <EmbeddedResource Remove="Content\Characters\**" />
+    <EmbeddedResource Remove="Content\Effects\**" />
+    <EmbeddedResource Remove="Content\Font\**" />
+    <EmbeddedResource Remove="Content\Level1\**" />
+    <EmbeddedResource Remove="Content\Misc\**" />
+    <EmbeddedResource Remove="Content\Music\**" />
+    <EmbeddedResource Remove="Content\obj\**" />
+    <EmbeddedResource Remove="Content\ParticleEffects\**" />
+    <EmbeddedResource Remove="Content\Particles\**" />
+    <EmbeddedResource Remove="Content\Scripts\**" />
+    <EmbeddedResource Remove="Content\SFX\**" />
+    <None Remove="Content\bin\**" />
+    <None Remove="Content\Characters\**" />
+    <None Remove="Content\Effects\**" />
+    <None Remove="Content\Font\**" />
+    <None Remove="Content\Level1\**" />
+    <None Remove="Content\Misc\**" />
+    <None Remove="Content\Music\**" />
+    <None Remove="Content\obj\**" />
+    <None Remove="Content\ParticleEffects\**" />
+    <None Remove="Content\Particles\**" />
+    <None Remove="Content\Scripts\**" />
+    <None Remove="Content\SFX\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Content\EnemySprite.xml" />
+    <None Remove="Content\KunaiSprite.xml" />
+    <None Remove="Content\level1.xml" />
+    <None Remove="Content\level2.xml" />
+    <None Remove="Content\level3.xml" />
+    <None Remove="Content\level4.xml" />
+    <None Remove="Content\level5.xml" />
+    <None Remove="Icon.ico" />
+    <None Remove="Icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icon.ico" />
+    <EmbeddedResource Include="Icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <MonoGameContentReference Include="Content\Content.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Aether.Physics2D.Diagnostics.MG" Version="1.5.0" />
+    <PackageReference Include="Aether.Physics2D.MG" Version="1.5.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.7.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Scripting" Version="3.7.0" />
+    <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GameLib\GameLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ProjectMercury">
+      <HintPath>bin\Debug\netcoreapp3.1\ProjectMercury.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
