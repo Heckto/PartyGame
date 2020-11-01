@@ -147,35 +147,31 @@ namespace Game1.GameObjects.Levels
             base.onMouseButtonUp(mouseworldpos);
         }        
 
-        public override void drawInEditor(SpriteBatch sb)
+        public override void drawInEditor(SpriteBatcher sb)
         {
             if (!Visible) return;
             var c = hovering ? new Color(255, 0, 0, 228) : LineColor;
             if (IsPolygon)
-                Primitives.Instance.drawPolygon(sb, WorldPoints, c, LineWidth);
+                sb.DrawPolygon(WorldPoints, c, LineWidth);            
             else
-                Primitives.Instance.drawPath(sb, WorldPoints, c, LineWidth);
-
+                sb.DrawPath(WorldPoints, c, LineWidth);           
         }
 
-        public override void drawSelectionFrame(SpriteBatch sb, Matrix matrix, Color color)
+        public override void drawSelectionFrame(SpriteBatcher sb, Matrix matrix, Color color)
         {
             var transformedPoints = new Vector2[WorldPoints.Length];
             Vector2.Transform(WorldPoints, ref matrix, transformedPoints);
 
             if (IsPolygon)
-                Primitives.Instance.drawPolygon(sb, transformedPoints, color, 2);
+                sb.DrawPolygon(transformedPoints, color, 2);
             else
-                Primitives.Instance.drawPath(sb, transformedPoints, color, 2);
+                sb.DrawPath(transformedPoints, color, 2);
 
             foreach (var p in transformedPoints)
             {
-                Primitives.Instance.drawCircleFilled(sb, p, 4, color);
+                sb.DrawCircleFilled(p, 4, color);
             }
-
-            Primitives.Instance.drawBoxFilled(sb, transformedPoints[0].X - 5, transformedPoints[0].Y - 5, 10, 10, color);
-
-
+            sb.DrawBoxFilled(transformedPoints[0].X - 5, transformedPoints[0].Y - 5, 10, 10, color);
         }
 
         #endregion

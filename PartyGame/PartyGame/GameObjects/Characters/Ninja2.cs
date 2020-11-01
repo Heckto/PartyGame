@@ -191,11 +191,11 @@ namespace Game1.GameObjects.Characters
             }
         }
 
-        //protected override void ManagedDraw(SpriteBatch spriteBatch)
+        //protected override void ManagedDraw(SpriteBatcher SpriteBatcher)
         //{
-        //    base.ManagedDraw(spriteBatch);
+        //    base.ManagedDraw(SpriteBatcher);
         //    foreach (var thrown in thrownObjects)
-        //        thrown.Draw(spriteBatch);
+        //        thrown.Draw(SpriteBatcher);
         //}
 
         public enum CharState

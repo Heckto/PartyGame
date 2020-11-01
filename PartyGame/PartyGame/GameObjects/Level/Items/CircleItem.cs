@@ -60,20 +60,21 @@ namespace Game1.GameObjects.Levels
             base.onMouseButtonDown(mouseworldpos);
         }
 
-        public override void drawInEditor(SpriteBatch sb)
+        public override void drawInEditor(SpriteBatcher sb)
         {
             if (!Visible) return;
             var c = hovering ? new Color(255, 0, 0, 228) : FillColor;
-            Primitives.Instance.drawCircleFilled(sb, Transform.Position, Radius, c);
+            sb.DrawCircleFilled(Transform.Position, Radius, c);            
         }
 
 
-        public override void drawSelectionFrame(SpriteBatch sb, Matrix matrix, Color color)
+        public override void drawSelectionFrame(SpriteBatcher sb, Matrix matrix, Color color)
         {
 
             var transformedPosition = Vector2.Transform(Transform.Position, matrix);
             var transformedRadius = Vector2.TransformNormal(Vector2.UnitX * Radius, matrix);
-            Primitives.Instance.drawCircle(sb, transformedPosition, transformedRadius.Length(), color, 2);
+            sb.DrawCircle(transformedPosition, transformedRadius.Length(), color, 2);
+            
 
             var extents = new Vector2[4];
             extents[0] = transformedPosition + Vector2.UnitX * transformedRadius.Length();
@@ -83,11 +84,11 @@ namespace Game1.GameObjects.Levels
 
             foreach (var p in extents)
             {
-                Primitives.Instance.drawCircleFilled(sb, p, 4, color);
+                sb.DrawCircleFilled(p, 4, color);                
             }
 
             var origin = Vector2.Transform(Transform.Position, matrix);
-            Primitives.Instance.drawBoxFilled(sb, origin.X - 5, origin.Y - 5, 10, 10, color);
+            sb.DrawBoxFilled(origin.X - 5, origin.Y - 5, 10, 10, color);           
 
         }
 

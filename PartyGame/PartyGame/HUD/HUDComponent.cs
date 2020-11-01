@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AuxLib;
 
 namespace Game1.HUD
 {
@@ -14,7 +15,7 @@ namespace Game1.HUD
         public bool Enabled = true;
         public bool Visible = true;
 
-        public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);
+        public abstract void Draw(SpriteBatcher SpriteBatcher, GameTime gameTime);
         public abstract void Update(GameTime gameTime);
     }
 }

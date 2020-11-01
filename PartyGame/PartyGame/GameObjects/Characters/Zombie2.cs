@@ -15,7 +15,7 @@ using Game1.GameObjects.Sprite.Enums;
 using Game1.DataContext;
 using tainicom.Aether.Physics2D.Dynamics;
 using Game1.Rendering;
-using AuxLib.RandomGeneration;
+using AuxLib.RandomGen;
 using Game1.GameObjects.Graphics.Effects;
 
 namespace Game1.GameObjects.Characters
@@ -228,11 +228,11 @@ namespace Game1.GameObjects.Characters
             //}
         }
 
-        //protected override void ManagedDraw(SpriteBatch spriteBatch)
+        //protected override void ManagedDraw(SpriteBatcher SpriteBatcher)
         //{
-        //    base.ManagedDraw(spriteBatch);
+        //    base.ManagedDraw(SpriteBatcher);
         //    foreach (var thrown in thrownObjects)
-        //        thrown.Draw(spriteBatch);
+        //        thrown.Draw(SpriteBatcher);
         //}
 
         protected override void OnDeath()
@@ -248,7 +248,7 @@ namespace Game1.GameObjects.Characters
             }
         }
 
-        public void Draw(SpriteBatch sb)
+        public void Draw(SpriteBatcher sb)
         {
             if (InvulnerabilityTimer > 0)
             {

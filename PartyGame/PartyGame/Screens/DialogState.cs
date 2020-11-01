@@ -24,7 +24,7 @@ namespace Game1.Screens
         private Texture2D pictureTex;
 
         private Rectangle textRect;
-        private SpriteBatch spriteBatch;        
+        private SpriteBatcher SpriteBatcher;        
         private SoundEffect sound;
 
         private string CappedMsg;
@@ -123,17 +123,17 @@ namespace Game1.Screens
         }
         public override void Draw(GameTime gameTime)
         {
-            spriteBatch.Begin();
-            Primitives.Instance.drawBoxFilled(spriteBatch, dialogRect, new Color(Color.Black, 0.5f));
-            spriteBatch.Draw(pictureTex, pictureRect, Color.White);
-            spriteBatch.DrawString(dialogFont, currentText, lineIdx[0], Color.White);
+            SpriteBatcher.Begin();
+            SpriteBatcher.DrawBoxFilled(dialogRect, new Color(Color.Black, 0.5f));
+            SpriteBatcher.Draw(pictureTex, pictureRect, Color.White);
+            SpriteBatcher.DrawString(dialogFont, currentText, lineIdx[0], Color.White);
             base.Draw(gameTime);
-            spriteBatch.End();
+            SpriteBatcher.End();
         }
 
         protected override void LoadContent(ContentManager contentManager)
         {
-            spriteBatch = OurGame.Services.GetService<SpriteBatch>();
+            SpriteBatcher = OurGame.Services.GetService<SpriteBatcher>();
             
             pictureTex = contentManager.Load<Texture2D>(@"Misc\" + assetPic);            
             dialogFont = contentManager.Load<SpriteFont>("Font/DialogFont");

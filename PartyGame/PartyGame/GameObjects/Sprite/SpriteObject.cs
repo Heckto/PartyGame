@@ -91,12 +91,12 @@ namespace Game1.GameObjects.Sprite
         }
 
 
-        public virtual void Draw(SpriteBatch spriteBatch, AnimationEffect animationEffect)
+        public virtual void Draw(SpriteBatcher SpriteBatcher, AnimationEffect animationEffect)
         {
             var flip = (Direction == FaceDirection.Left);
 
             if(CurrentAnimation != null)
-                CurrentAnimation.Draw(spriteBatch, (flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None), Transform.Position, 0, 0.5f, Color, animationEffect);
+                CurrentAnimation.Draw(SpriteBatcher, (flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None), Transform.Position, 0, 0.5f, Color, animationEffect);
         }
 
         public virtual void SetAnimation(string name)
@@ -183,7 +183,7 @@ namespace Game1.GameObjects.Sprite
         }
 
 
-        public override void drawInEditor(SpriteBatch sb)
+        public override void drawInEditor(SpriteBatcher sb)
         {
             if (!Visible) return;           
             var c = hovering ? new Color(255, 0, 0, 228) : Color;
@@ -193,22 +193,20 @@ namespace Game1.GameObjects.Sprite
             if (CurrentAnimation != null)
                 CurrentAnimation.Draw(sb, (flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None), Transform.Position, 0, 0.5f, c, AnimationEffect.None);
 
-
-            Primitives.Instance.drawBox(sb, getBoundingBox(),c, 5);
+            sb.DrawBox(getBoundingBox(), c, 5);
         }
 
-        public override void drawSelectionFrame(SpriteBatch sb, Matrix matrix, Color color)
+        public override void drawSelectionFrame(SpriteBatcher sb, Matrix matrix, Color color)
         {
             var poly = new Vector2[4];
             Vector2.Transform(polygon, ref matrix, poly);
-
-            Primitives.Instance.drawPolygon(sb, poly, color, 2);
+            sb.DrawPolygon(poly, color, 2);
             foreach (var p in poly)
             {
-                Primitives.Instance.drawCircleFilled(sb, p, 4, color);
+                sb.DrawCircleFilled(p, 4, color);
             }
             var origin = Vector2.Transform(Transform.Position, matrix);
-            Primitives.Instance.drawBoxFilled(sb, origin.X - 5, origin.Y - 5, 10, 10, color);
+            sb.DrawBoxFilled(origin.X - 5, origin.Y - 5, 10, 10, color);
         }
 
         public override bool contains(Vector2 worldpos)

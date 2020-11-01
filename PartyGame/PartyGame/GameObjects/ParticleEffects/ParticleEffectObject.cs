@@ -38,12 +38,12 @@ namespace Game1.GameObjects.ParticleEffects
     //        return r.Contains(worldpos);
     //    }
 
-    //    //public void Draw(SpriteBatch sb, Matrix mat)
+    //    //public void Draw(SpriteBatcher sb, Matrix mat)
     //    //{   sb.Draw(this.effect, ref mat);
     //    //    //batch.Draw(this.effect, ref mat);
     //    //}
 
-    //    public void Draw(SpriteBatch sb)
+    //    public void Draw(SpriteBatcher sb)
     //    {
     //        for (var i = 0; i < effect.Count; i++)
     //        {
@@ -71,14 +71,14 @@ namespace Game1.GameObjects.ParticleEffects
     //        Material = RenderMaterial.DefaultParticleMaterial;
     //    }
 
-    //    public override void drawInEditor(SpriteBatch sb)
+    //    public override void drawInEditor(SpriteBatcher sb)
     //    {
     //        if (!Visible) return;
     //        var c = hovering ? new Color(255, 0, 0, 228) : Color.Yellow;
     //        Primitives.Instance.drawBox(sb, boundingrectangle, c, 2);
     //    }
 
-    //    public override void drawSelectionFrame(SpriteBatch sb, Matrix matrix, Color color)
+    //    public override void drawSelectionFrame(SpriteBatcher sb, Matrix matrix, Color color)
     //    {
     //        Primitives.Instance.drawBox(sb, this.boundingrectangle.Transform(matrix), color, 2);
     //        var poly = boundingrectangle.Transform(matrix).ToPolygon();

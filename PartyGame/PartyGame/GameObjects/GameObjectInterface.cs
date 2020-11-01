@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Game1.GameObjects.Levels;
 using System;
+using AuxLib;
 
 namespace Game1.GameObjects
 {
@@ -12,7 +13,7 @@ namespace Game1.GameObjects
 
     public interface IDrawableItem
     {
-        void Draw(SpriteBatch sb);
+        void Draw(SpriteBatcher sb);
     }
 
     public interface IEditableGameObject
@@ -23,8 +24,8 @@ namespace Game1.GameObjects
         bool contains(Vector2 worldpos);
         void onMouseButtonDown(Vector2 mouseworldpos);
 
-        void drawInEditor(SpriteBatch sb);
-        void drawSelectionFrame(SpriteBatch sb, Matrix matrix, Color color);
+        void drawInEditor(SpriteBatcher sb);
+        void drawSelectionFrame(SpriteBatcher sb, Matrix matrix, Color color);
 
         bool onMouseOver(Vector2 mouseworldpos, out string msg);
         void onMouseOut();

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using AuxLib;
 
 namespace Game1.Rendering
 {
@@ -12,7 +13,7 @@ namespace Game1.Rendering
 
         protected List<IDrawableItem> renderItems = new List<IDrawableItem>();
 
-        //public abstract void Render(SpriteBatch sb, Matrix proj);
+        //public abstract void Render(SpriteBatcher sb, Matrix proj);
 
         public void Add(IDrawableItem item)
         {
@@ -34,7 +35,7 @@ namespace Game1.Rendering
             return renderItems.Count;
         }
 
-        public void Render(SpriteBatch sb, Matrix proj)
+        public void Render(SpriteBatcher sb, Matrix proj)
         {
             sb.Begin(SpriteSortMode.Deferred, Material.blendState, null, null, null, Material.Effect, proj);
             foreach (var item in renderItems)

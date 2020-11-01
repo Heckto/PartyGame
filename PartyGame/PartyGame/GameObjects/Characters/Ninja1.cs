@@ -90,7 +90,8 @@ namespace Game1.GameObjects.Characters
 
             controller = new Controller2D(CollisionBox, Category.Cat1 | Category.Cat2 | Category.Cat4 | Category.Cat5);
 
-            context.camera.SetViewTarget(this);
+            context.camera.LookAt(Transform.Position);
+            //context.camera.SetViewTarget(this);
 
             trigger = new ColliderTriggerHelper(CollisionBox, Category.Cat9);
             trigger.onEnterZone += Trigger_onEnterZone;
@@ -368,7 +369,7 @@ namespace Game1.GameObjects.Characters
             }
         }
 
-        public void Draw(SpriteBatch sb)
+        public void Draw(SpriteBatcher sb)
         {
             var effect = InvulnerabilityTimer > 0 ? AnimationEffect.FlashWhite : AnimationEffect.None;
             if (CurrentAnimation != null)

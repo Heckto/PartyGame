@@ -34,7 +34,7 @@ namespace Game1.GameObjects.Levels
 
         public TextureItem() : base() { }
 
-        public void Draw(SpriteBatch sb)
+        public void Draw(SpriteBatcher sb)
         {
             var effects = SpriteEffects.None;
             if (FlipHorizontally) effects |= SpriteEffects.FlipHorizontally;
@@ -126,7 +126,7 @@ namespace Game1.GameObjects.Levels
             base.onMouseButtonDown(mouseworldpos);
         }
 
-        public override void drawInEditor(SpriteBatch sb)
+        public override void drawInEditor(SpriteBatcher sb)
         {
             if (!Visible) return;
             var se = SpriteEffects.None;
@@ -141,18 +141,18 @@ namespace Game1.GameObjects.Levels
             texture = content.Load<Texture2D>(texture_filename);            
         }
 
-        public override void drawSelectionFrame(SpriteBatch sb, Matrix matrix, Color color)
+        public override void drawSelectionFrame(SpriteBatcher sb, Matrix matrix, Color color)
         {
             var poly = new Vector2[4];
             Vector2.Transform(polygon, ref matrix, poly);
-
-            Primitives.Instance.drawPolygon(sb, poly, color, 2);
+            sb.DrawPolygon(poly, color, 2);
+            
             foreach (var p in poly)
             {
-                Primitives.Instance.drawCircleFilled(sb, p, 4, color);
+                sb.DrawCircleFilled(p, 4, color);
             }
             var origin = Vector2.Transform(Transform.Position, matrix);
-            Primitives.Instance.drawBoxFilled(sb, origin.X - 5, origin.Y - 5, 10, 10, color);
+            sb.DrawBoxFilled(origin.X - 5, origin.Y - 5, 10, 10, color);
         }
 
         public override bool contains(Vector2 worldpos)

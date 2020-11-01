@@ -10,7 +10,6 @@ namespace AuxLib.ScreenManagement
     public interface IGameState
     {
         GameState Value { get; }
-    //    void LoadContent();
     }
 
     public interface IGameStateManager

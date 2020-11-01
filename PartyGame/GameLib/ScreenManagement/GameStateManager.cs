@@ -7,7 +7,7 @@ namespace AuxLib.ScreenManagement
 {
     public class GameStateManager : DrawableGameComponent, IGameStateManager
     {
-        private Stack<GameState> states = new Stack<GameState>();
+        private readonly Stack<GameState> states = new Stack<GameState>();
         public event EventHandler OnStateChange;
         private int initialDrawOrder = 1000;
         private int drawOrder;

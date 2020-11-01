@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using AuxLib.Debug;
+using AuxLib;
 using System.IO;
 using Game1.Settings;
 using AuxLib.Camera;
@@ -18,29 +19,29 @@ namespace Game1.Screens
     public sealed class PlayState : BaseGameState, IPlayGameState
     {
         private readonly GameContext context;
-        private FocusCamera camera;
-        private readonly SpriteBatch spriteBatch;
+        private FocusCamera<Vector2> camera;
+        private readonly SpriteBatcher SpriteBatcher;
         private ScriptingEngine scriptingEngine;
         string lvlFile;
         GameSettings settings;
-        FpsMonitor monitor;
+        public static DebugMonitor DebugMonitor;
         HeadsUpDisplay hud;
         SpriteFont font;
 
         
         
 
-        public static DebugMonitor DebugMonitor = new DebugMonitor();
+//        public static DebugMonitor DebugMonitor = new DebugMonitor();
 
 
         public PlayState(DemoGame game,string LevelFile) : base(game)
         {            
-            spriteBatch = game.Services.GetService<SpriteBatch>();
-            camera = game.Services.GetService<FocusCamera>();
+            SpriteBatcher = game.Services.GetService<SpriteBatcher>();
+            camera = game.Services.GetService<FocusCamera<Vector2>>();
             settings = game.Services.GetService<GameSettings>();
             scriptingEngine = game.Services.GetService<ScriptingEngine>();
             context = game.Services.GetService<GameContext>();
-            monitor = new FpsMonitor();
+            DebugMonitor = new DebugMonitor(game);
             
             lvlFile = LevelFile;
 
@@ -85,9 +86,10 @@ namespace Game1.Screens
 
             hud.Update(gameTime);
 
-            monitor.Update();
+            DebugMonitor.Update(gameTime);
+            //DebugMonitor.Update();
 
-            DebugMonitor.AddDebugValue("FrameRate", monitor.Value);
+            //DebugMonitor.AddDebugValue("FrameRate", monitor.Value);
         }
 
 
@@ -95,14 +97,14 @@ namespace Game1.Screens
         {
             DemoGame.graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            context.lvl.Draw(spriteBatch, camera);
+            context.lvl.Draw(SpriteBatcher, camera);
 
-            hud.Draw(spriteBatch, gameTime);
+            hud.Draw(SpriteBatcher, gameTime);
 
             if (settings.debugMode)
             {
-                context.lvl.DrawDebug(spriteBatch, font, camera);
-                DebugMonitor.Draw(spriteBatch);
+                context.lvl.DrawDebug(SpriteBatcher, font, camera);
+                DebugMonitor.Draw(gameTime);
             }
 
             base.Draw(gameTime);
@@ -111,7 +113,7 @@ namespace Game1.Screens
         protected override void LoadContent(ContentManager contentManager)
         {
             font = contentManager.Load<SpriteFont>("Font/DiagnosticFont");
-            DebugMonitor.Initialize(font);
+            DebugMonitor.Initialize();
 
             if (!String.IsNullOrEmpty(lvlFile) && File.Exists(lvlFile))
             {

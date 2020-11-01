@@ -80,11 +80,11 @@ namespace AuxLib.Sound
                 musicFileList = musicFolder.GetFiles("*.xnb");
                 musicList = new Dictionary<string, Song>();
 
-                for (var i = 0; i < musicFileList.Length; i++)
-                {
-                    var fn = Path.GetFileNameWithoutExtension(musicFileList[i].Name);
-                    musicList[fn] = game.Content.Load<Song>("Music\\" + fn);                    
-                }
+                //for (var i = 0; i < musicFileList.Length; i++)
+                //{
+                //    var fn = Path.GetFileNameWithoutExtension(musicFileList[i].Name);
+                //    musicList[fn] = game.Content.Load<Song>("Music\\" + fn);                    
+                //}
 
 
             }

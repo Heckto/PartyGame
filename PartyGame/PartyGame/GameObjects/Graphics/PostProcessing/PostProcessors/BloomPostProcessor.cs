@@ -4,6 +4,7 @@ using Game1.GameObjects.Graphics.PostProcessing;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
+using AuxLib;
 
 namespace Game1.GameObjects.Graphics.PostProcessing
 {
@@ -119,7 +120,7 @@ namespace Game1.GameObjects.Graphics.PostProcessing
 			_gaussianBlurEffect.VerticalBlurDelta = 1f / (sceneRenderTargetSize.Y * _renderTargetScale);
 		}
         
-		public override void Process(SpriteBatch sb, RenderTarget2D source, RenderTarget2D destination)
+		public override void Process(SpriteBatcher sb, RenderTarget2D source, RenderTarget2D destination)
 		{
             
 

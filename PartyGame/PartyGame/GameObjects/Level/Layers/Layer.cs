@@ -9,6 +9,7 @@ using static Game1.GameObjects.Levels.Level;
 using Game1.Rendering;
 using AuxLib.Camera;
 using Microsoft.Xna.Framework.Content;
+using AuxLib;
 
 namespace Game1.GameObjects.Levels
 {
@@ -59,12 +60,12 @@ namespace Game1.GameObjects.Levels
                 _postProcessors[idx].Update(gameTime);
         }
 
-        public void Draw(SpriteBatch sb, FocusCamera camera,RenderTarget2D renderTarget)
+        public void Draw(SpriteBatcher sb, FocusCamera<Vector2> camera,RenderTarget2D renderTarget)
         {
             foreach (var entry in renderList)
             {
                 if (entry.Value.getRenderCount() > 0)
-                    entry.Value.Render(sb, camera.getViewMatrix(ScrollSpeed));
+                    entry.Value.Render(sb, camera.GetViewMatrix(ScrollSpeed));
             }
 
             if (_postProcessors.Count > 0)
@@ -116,7 +117,7 @@ namespace Game1.GameObjects.Levels
             return null;
         }
 
-        public void drawInEditor(SpriteBatch sb)
+        public void drawInEditor(SpriteBatcher sb)
         {
             if (!Visible) return;
             foreach (var item in Items)

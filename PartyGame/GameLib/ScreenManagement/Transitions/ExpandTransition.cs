@@ -7,7 +7,7 @@ namespace AuxLib.ScreenManagement.Transitions
     public class ExpandTransition : Transition
     {
         private readonly GraphicsDevice _graphicsDevice;
-        private readonly SpriteBatch _spriteBatch;
+        private readonly SpriteBatcher _spriteBatch;
 
         public ExpandTransition(GraphicsDevice graphicsDevice, Color color, float duration = 1.0f)
             : base(duration)
@@ -15,7 +15,7 @@ namespace AuxLib.ScreenManagement.Transitions
             Color = color;
 
             _graphicsDevice = graphicsDevice;
-            _spriteBatch = new SpriteBatch(graphicsDevice);
+            _spriteBatch = new SpriteBatcher(graphicsDevice);
         }
 
         public override void Dispose()
@@ -36,7 +36,8 @@ namespace AuxLib.ScreenManagement.Transitions
             var rectangle = new Rectangle((int)x,(int) y, (int)width, (int)height);
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            Primitives.Instance.drawBoxFilled(_spriteBatch, rectangle, Color);
+            
+            _spriteBatch.DrawBoxFilled(rectangle, Color);
             _spriteBatch.End();
         }
     }

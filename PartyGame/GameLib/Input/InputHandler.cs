@@ -35,9 +35,7 @@ namespace AuxLib.Input
         private MouseState mouseState;
         private MouseState prevMouseState;
 #endif
-        public bool HandleInput { get; set; } = true;
-
-        private bool allowsExiting;
+        public bool HandleInput { get; set; } = true;        
 
         private static InputHandler instance;
         public static InputHandler Instance
@@ -58,20 +56,18 @@ namespace AuxLib.Input
         }
 
         public InputHandler(Game game) : this(game, false) { }
-        public InputHandler(Game game, bool allowsExiting)
-            : base(game)
+        public InputHandler(Game game, bool allowsExiting) : base(game)
         {
-            this.allowsExiting = allowsExiting;
 
             game.Services.AddService(typeof(IInputHandler), this);
 
             //initialize our member fields
             keyboard = new KeyboardHandler();
 
-#if !XBOX360
+            #if !XBOX360
             Game.IsMouseVisible = true;
             prevMouseState = Mouse.GetState();
-#endif
+            #endif
         }
 
         /// <summary>
@@ -94,22 +90,10 @@ namespace AuxLib.Input
             keyboard.Update();
             gamePadHandler.Update();
 
-            //if (allowsExiting)
-            //{
-            //    if (keyboard.IsKeyDown(Keys.Escape))
-            //        Game.Exit();
-
-            //    // Allows the default game to exit on Xbox 360 and Windows
-            //    if (gamePadHandler.WasButtonPressed(0, Buttons.Back))
-            //        Game.Exit();
-            //}
-
-
-
-#if !XBOX360
-            prevMouseState = mouseState;
-            mouseState = Mouse.GetState();
-#endif
+            #if !XBOX360
+                        prevMouseState = mouseState;
+                        mouseState = Mouse.GetState();
+            #endif
 
             base.Update(gameTime);
         }

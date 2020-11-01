@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System.IO;
 using System;
 using Microsoft.Xna.Framework.Content;
+using AuxLib;
 using AuxLib.Camera;
 using AuxLib.Input;
 using AuxLib.Sound;
@@ -23,9 +24,9 @@ namespace Game1
     /// </summary>
     public class DemoGame : Game
     {
-        private FocusCamera camera;
+        private FocusCamera<Vector2> camera;
         
-        private SpriteBatch spriteBatch;
+        private SpriteBatcher SpriteBatcher;
         private GameStateManager gameManager;
         private InputHandler inputHandler;
         private GameContext context;
@@ -68,7 +69,7 @@ namespace Game1
             
             var soundDir = new DirectoryInfo(Path.Combine(Content.RootDirectory,"SFX"));
             var musicDir = new DirectoryInfo(Path.Combine(Content.RootDirectory, "Music"));
-            AudioManager.Initialize(this, soundDir,musicDir);           
+            AudioManager.Initialize(this, soundDir,musicDir);
 
 
             inputHandler = InputHandler.InitializeSingleton(this);
@@ -85,12 +86,12 @@ namespace Game1
             Window.IsBorderless = true;
 
             
-            camera = new FocusCamera(GraphicsDevice.Viewport,null);
+            camera = new FocusCamera<Vector2>(GraphicsDevice.Viewport);
 
             Services.AddService(camera);
 
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            Services.AddService(spriteBatch);
+            SpriteBatcher = new SpriteBatcher(GraphicsDevice);
+            Services.AddService(SpriteBatcher);
 
             
 
@@ -103,7 +104,7 @@ namespace Game1
                 transitionManager = transMan,
                 input = inputHandler,
                 scripter = scriptManager,
-                spriteBatch = spriteBatch,
+                SpriteBatcher = SpriteBatcher,
                 content = Content,
                 graphics = GraphicsDevice
             };
@@ -136,7 +137,7 @@ namespace Game1
                 gameManager.ChangeState(new PlayState(this,commandParam));
             else
                 gameManager.ChangeState(new TitleIntroState(this));
-            // Create a new SpriteBatch, which can be used to draw textures.            
+            // Create a new SpriteBatcher, which can be used to draw textures.            
             base.LoadContent();
         }
 

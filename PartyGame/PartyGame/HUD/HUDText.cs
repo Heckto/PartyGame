@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using AuxLib;
 
 namespace Game1.HUD
 {
@@ -36,11 +37,11 @@ namespace Game1.HUD
         }
 
 
-        public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
+        public override void Draw(SpriteBatcher SpriteBatcher, GameTime gameTime)
         {
-            spriteBatch.Begin();
-            spriteBatch.DrawString(levelIntrofont, TextToDisplay, textPos, new Color(Color.Black, fadeAmount));
-            spriteBatch.End();
+            SpriteBatcher.Begin();
+            SpriteBatcher.DrawString(levelIntrofont, TextToDisplay, textPos, new Color(Color.Black, fadeAmount));
+            SpriteBatcher.End();
         }
 
         public override void Update(GameTime gameTime)

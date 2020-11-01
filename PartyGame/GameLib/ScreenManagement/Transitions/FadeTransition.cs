@@ -12,7 +12,7 @@ namespace AuxLib.ScreenManagement.Transitions
     public class FadeTransition : Transition
     {
         private readonly GraphicsDevice _graphicsDevice;
-        private readonly SpriteBatch _spriteBatch;
+        private readonly SpriteBatcher _spriteBatch;
 
         public FadeTransition(GraphicsDevice graphicsDevice, Color color, float duration = 1.0f)
             : base(duration)
@@ -20,7 +20,7 @@ namespace AuxLib.ScreenManagement.Transitions
             Color = color;
 
             _graphicsDevice = graphicsDevice;
-            _spriteBatch = new SpriteBatch(graphicsDevice);
+            _spriteBatch = new SpriteBatcher(graphicsDevice);
         }
 
         public override void Dispose()
@@ -33,7 +33,7 @@ namespace AuxLib.ScreenManagement.Transitions
         public override void Draw(GameTime gameTime)
         {
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            Primitives.Instance.drawBoxFilled(_spriteBatch, _graphicsDevice.Viewport.Bounds, Color * Value);
+            _spriteBatch.DrawBoxFilled(_graphicsDevice.Viewport.Bounds, Color * Value);
             _spriteBatch.End();
         }
     }

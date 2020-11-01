@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AuxLib;
 
 namespace Game1.GameObjects.Sprite
 {
@@ -24,9 +25,9 @@ namespace Game1.GameObjects.Sprite
             this.definition = definition;
         }
 
-        public void Draw(SpriteBatch spriteBatch, SpriteEffects flipEffects, Vector2 position, float rotation, float scale, Color color, IAnimationEffect animationEffect)
+        public void Draw(SpriteBatcher SpriteBatcher, SpriteEffects flipEffects, Vector2 position, float rotation, float scale, Color color, IAnimationEffect animationEffect)
         {
-            animationEffect.Draw(spriteBatch, spriteSheet, position, definition.SrcRectangle, color, rotation, definition.Origin, scale, flipEffects, 1.0f);
+            animationEffect.Draw(SpriteBatcher, spriteSheet, position, definition.SrcRectangle, color, rotation, definition.Origin, scale, flipEffects, 1.0f);
         }
 
         public static Dictionary<string, SpriteAnimationFrameSpriteSheet> FromDefinitionFile(string definitionLocation, ContentManager content)

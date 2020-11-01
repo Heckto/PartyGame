@@ -92,18 +92,18 @@ namespace Game1.GameObjects.Obstacles
                 movingObj.Transform.Position += d;
         }
 
-        public override void drawInEditor(SpriteBatch sb)
+        public override void drawInEditor(SpriteBatcher sb)
         {
             base.drawInEditor(sb);
 
             if (WayPoints.Count > 0)
             {
-                Primitives.Instance.drawLine(sb, Transform.Position, WayPoints[0], Color.Blue, 3);
+                sb.DrawLine(Transform.Position, WayPoints[0], Color.Blue, 3);
                 for (var idx = 0; idx < WayPoints.Count - 1; idx++)
                 {
                     var s1 = WayPoints[idx];
                     var s2 = WayPoints[idx + 1];
-                    Primitives.Instance.drawLine(sb, s1, s2, Color.Blue, 3);
+                    sb.DrawLine(s1, s2, Color.Blue, 3);
                 }
             }
 

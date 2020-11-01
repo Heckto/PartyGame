@@ -13,7 +13,7 @@ using AuxLib.Input;
 using Game1.GameObjects.Sprite;
 using AuxLib.Sound;
 using Game1.HUD;
-using System.Collections.Generic;
+using AuxLib;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
@@ -23,8 +23,8 @@ namespace Game1.DataContext
     {
         public TaskCompletionSource<FrameNotifyer> currentFrameSource;
 
-        public SpriteBatch spriteBatch;
-        public FocusCamera camera;
+        public SpriteBatcher SpriteBatcher;
+        public FocusCamera<Vector2> camera;
         public Level lvl;
         public TransitionManager transitionManager;
         public GameStateManager gameManager;
@@ -42,7 +42,7 @@ namespace Game1.DataContext
 
         public void SpawnEnemy(string name)
         {
-            var m = Matrix.Invert(camera.getViewMatrix());
+            var m = Matrix.Invert(camera.GetViewMatrix());
             var mousePos = Mouse.GetState().Position.ToVector2();
             var worldPos = Vector2.Transform(mousePos, m);
             lvl.SpawnEnemy(name, worldPos);
@@ -56,7 +56,7 @@ namespace Game1.DataContext
 
         public void SpawnPlayer()
         {
-            var m = Matrix.Invert(camera.getViewMatrix());
+            var m = Matrix.Invert(camera.GetViewMatrix());
             var mousePos = Mouse.GetState().Position.ToVector2();
             var worldPos = Vector2.Transform(mousePos, m);
             lvl.SpawnPlayer(worldPos);
@@ -133,7 +133,7 @@ namespace Game1.DataContext
             try
             {
                 var speed = 0.02f;
-                var m = Matrix.Invert(camera.getViewMatrix());
+                var m = Matrix.Invert(camera.GetViewMatrix());
                 var mousePos = Mouse.GetState().Position.ToVector2();
                 var dest = Vector2.Transform(mousePos, m);
                 var perc = 0f;

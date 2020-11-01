@@ -7,7 +7,7 @@ using Game1.GameObjects.Sprite;
 using Game1.GameObjects.Levels;
 using Game1.GameObjects.Sprite.Enums;
 using Game1.DataContext;
-using AuxLib.RandomGeneration;
+using AuxLib.RandomGen;
 using tainicom.Aether.Physics2D.Dynamics;
 using Microsoft.Xna.Framework.Content;
 using Game1.GameObjects.Graphics.Effects;
@@ -203,7 +203,7 @@ namespace Game1.GameObjects.Characters
             }
         }
 
-        public void Draw(SpriteBatch sb)
+        public void Draw(SpriteBatcher sb)
         {
             if (InvulnerabilityTimer > 0)
             {

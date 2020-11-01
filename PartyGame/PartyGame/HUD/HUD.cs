@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using AuxLib;
 
 namespace Game1.HUD
 {
@@ -20,12 +21,12 @@ namespace Game1.HUD
             Enabled = true;
         }
 
-        public void Draw(SpriteBatch spriteBatch,GameTime gameTime)
+        public void Draw(SpriteBatcher SpriteBatcher,GameTime gameTime)
         {
             if (Visible)
             {
                 foreach (var component in componentList.Values)
-                    component.Draw(spriteBatch,gameTime);
+                    component.Draw(SpriteBatcher,gameTime);
             }
         }
 

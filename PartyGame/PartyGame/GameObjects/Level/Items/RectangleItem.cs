@@ -192,23 +192,23 @@ namespace Game1.GameObjects.Levels
         //    }
         //}
 
-        public override void drawInEditor(SpriteBatch sb)
+        public override void drawInEditor(SpriteBatcher sb)
         {
             if (!Visible) return;
             var c = hovering ? new Color(255, 0, 0, 228) : FillColor;
-            Primitives.Instance.drawBoxFilled(sb, boundingrectangle, c);
+            sb.DrawBoxFilled(boundingrectangle, c);
         }
 
 
-        public override void drawSelectionFrame(SpriteBatch sb, Matrix matrix, Color color)
+        public override void drawSelectionFrame(SpriteBatcher sb, Matrix matrix, Color color)
         {
-            Primitives.Instance.drawBox(sb, this.boundingrectangle.Transform(matrix), color, 2);
+            sb.DrawBox(this.boundingrectangle.Transform(matrix), color, 2);
             var poly = boundingrectangle.Transform(matrix).ToPolygon();
             foreach (var p in poly)
             {
-                Primitives.Instance.drawCircleFilled(sb, p, 4, color);
+                sb.DrawCircleFilled(p, 4, color);
             }
-            Primitives.Instance.drawBoxFilled(sb, poly[0].X - 5, poly[0].Y - 5, 10, 10, color);
+            sb.DrawBoxFilled(poly[0].X - 5, poly[0].Y - 5, 10, 10, color);
         }
 
         #endregion

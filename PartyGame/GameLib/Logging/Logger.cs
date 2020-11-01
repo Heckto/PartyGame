@@ -15,12 +15,13 @@ namespace AuxLib.Logging
             }
         }
 
-        //string logfilename = System.Windows.Forms.Application.StartupPath + "\\log.txt";
-        StreamWriter sw;
+
+        private string logFile = Path.Combine(Path.GetDirectoryName(typeof(Logger).Assembly.FullName),"log.txt");
+        private StreamWriter sw;
 
         public Logger()
         {
-            sw = new StreamWriter(@"C:\log.txt", false);
+            sw = new StreamWriter(logFile, false);
             sw.WriteLine(box("Log File created."));
             sw.Close();
         }
@@ -29,7 +30,7 @@ namespace AuxLib.Logging
         public void log(string message)
         {
 
-            sw = new StreamWriter(@"C:\log.txt", true);
+            sw = new StreamWriter(logFile, true);
             sw.WriteLine(box(message));
             sw.Close();
         }

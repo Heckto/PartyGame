@@ -310,7 +310,7 @@ namespace Game1
 
     public class RayCaster
     {
-        World world;
+        readonly World world;
 
         public RayCaster(World world)
         {

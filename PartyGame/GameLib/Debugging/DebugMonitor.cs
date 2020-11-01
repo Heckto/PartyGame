@@ -3,28 +3,33 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Threading.Tasks;
-using AuxLib;
+using Microsoft.Xna.Framework.Content;
 
 namespace AuxLib.Debug
 {
-    public class DebugMonitor
+    public class DebugMonitor : DrawableGameComponent
     {
         private const int itemSize = 20;
-        //private Dictionary<string, MonitorItem> debugMonitors;
         private Dictionary<string, object> debugData;
         private SpriteFont font;
-        public DebugMonitor()
+        private SpriteBatcher spriteBatch;
+
+        private readonly FpsMonitor fpsMonitor;
+
+        public DebugMonitor(Game game) : base(game)
         {
             debugData = new Dictionary<string, object>();
+            fpsMonitor = new FpsMonitor();
         }
 
-        public void Initialize(SpriteFont font)
+        public override void Initialize()
         {
-            this.font = font;
+            var content = Game.Services.GetService<ContentManager>();
+            spriteBatch = Game.Services.GetService<SpriteBatcher>();
+            font = content.Load<SpriteFont>("DiagnosticsFont");
         }
+
+        
 
         public void AddDebugValue(string name,object value)
         {
@@ -41,51 +46,34 @@ namespace AuxLib.Debug
         {
             debugData.Clear();
         }
-       
 
-        public void Draw(SpriteBatch spriteBatch)
+
+        public override void Draw(GameTime gameTime)
         {
+
+            const float maxHeight = 18f;
             var itemCnt = debugData.Count();
             if (itemCnt > 0)
             {
-                var strings = new List<string>();
-                var maxLength = 0f;
-                var maxHeight = 0f;
-                foreach (var item in debugData)
-                {
-                    
-                    var itemText = String.Empty;
-                    
-                    itemText = $"{item.Key} : { item.Value}";
-                    strings.Add(itemText);
-                    
-                    var textSize = font.MeasureString(itemText);
-
-                    maxLength = Math.Max(maxLength, textSize.X);
-                    maxHeight = Math.Max(maxHeight, textSize.Y);
-                }
-
                 var vectSize = itemCnt * maxHeight + 3f * maxHeight;
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-                Primitives.Instance.drawBoxFilled(spriteBatch,new Rectangle(50, 50, 400, (int)vectSize), Color.Black);
+                spriteBatch.DrawBoxFilled(new Rectangle(50, 50, 400, (int)vectSize), Color.Black);
                 var vertIdx = 70;
                 var idx = 0;
-                foreach (var item in strings)
+                foreach (var item in debugData)
                 {
-                    spriteBatch.DrawString(font, item, new Vector2(60, idx++ * itemSize + vertIdx), Color.White);
+                    spriteBatch.DrawString(font, $"{item.Key} : { item.Value}", new Vector2(60, idx++ * itemSize + vertIdx), Color.White);
                 }
                 spriteBatch.End();
             }
-
         }
-    }
 
-    public class MonitorItem
-    {
-        public Type t { get; set; }
-        public object DebugObject { get; set; }
-        public object DebugValue { get; set; }
-        public string Alias { get; set; } = String.Empty;
-
+        public override void Update(GameTime gameTime)
+        {
+            fpsMonitor.Update();
+            
+            AddDebugValue("FPS", fpsMonitor.Value);
+            base.Update(gameTime);
+        }
     }
 }

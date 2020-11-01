@@ -73,9 +73,9 @@ namespace Game1.GameObjects.Sprite
             base.Update(gameTime, lvl);
         }
 
-        //protected virtual void ManagedDraw(SpriteBatch spriteBatch)
+        //protected virtual void ManagedDraw(SpriteBatcher SpriteBatcher)
         //{
-        //    base.Draw(spriteBatch, InvulnerabilityTimer > 0 ? AnimationEffect.FlashWhite : AnimationEffect.None);
+        //    base.Draw(SpriteBatcher, InvulnerabilityTimer > 0 ? AnimationEffect.FlashWhite : AnimationEffect.None);
         //}
 
         public virtual void DealDamage(SpriteObject sender, int damage)

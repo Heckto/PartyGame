@@ -12,6 +12,7 @@ using System.ComponentModel;
 using static Game1.GameObjects.Levels.Level;
 using Game1.Rendering;
 using Game1.GameObjects.Graphics.Effects;
+using AuxLib;
 
 namespace Game1.GameObjects
 {
@@ -132,9 +133,9 @@ namespace Game1.GameObjects
         public abstract void OnTransformed();
         public abstract bool contains(Vector2 worldpos);
         
-        public abstract void drawInEditor(SpriteBatch sb);
+        public abstract void drawInEditor(SpriteBatcher sb);
         //public virtual void loadIntoEditor(ContentManager content) { }
-        public abstract void drawSelectionFrame(SpriteBatch sb, Matrix matrix, Color color);
+        public abstract void drawSelectionFrame(SpriteBatcher sb, Matrix matrix, Color color);
         
         public virtual bool onMouseOver(Vector2 mouseworldpos, out string msg)
         {

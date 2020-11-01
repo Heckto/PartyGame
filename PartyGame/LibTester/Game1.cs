@@ -1,32 +1,64 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using AuxLib.ScreenManagement;
+using AuxLib.Input;
+using AuxLib;
+using LibTester.Screens;
 
-namespace PartyGame
+namespace LibTester
 {
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
+        private SpriteBatcher _spriteBatch;
 
         public Game1()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);            
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
+
+            _graphics.PreferredBackBufferWidth = _graphics.GraphicsDevice.DisplayMode.Width;
+            _graphics.PreferredBackBufferHeight = _graphics.GraphicsDevice.DisplayMode.Height;
+            _graphics.ApplyChanges();
+            Window.IsBorderless = false;
+
+            _spriteBatch = new SpriteBatcher(GraphicsDevice);
+
+
+            Services.AddService(_spriteBatch);
+
             // TODO: Add your initialization logic here
+            var inputHandler = InputHandler.InitializeSingleton(this);
+            Services.AddService(inputHandler);
+            //Components.Add(inputHandler);
+
+
+            var gameManager = new GameStateManager(this);
+            Services.AddService(gameManager);
+
+
+
+
+
+            gameManager.PushState(new IntroScreen(this));
+
+
+
+            Components.Add(inputHandler);
+            Components.Add(gameManager);
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            
             // TODO: use this.Content to load your game content here
         }
 
@@ -42,11 +74,13 @@ namespace PartyGame
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);           
 
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
     }
+
+    
 }

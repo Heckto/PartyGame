@@ -3,7 +3,7 @@
 
 /outputDir:..\bin\Windows\x86\Debug\Content
 /intermediateDir:obj/$(Platform)
-/platform:Windows
+/platform:DesktopGL
 /config:
 /profile:Reach
 /compress:False

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AuxLib;
 
 namespace Game1.GameObjects.Graphics.PostProcessing.PostProcessors
 {
@@ -33,7 +34,7 @@ namespace Game1.GameObjects.Graphics.PostProcessing.PostProcessors
             Effect.Parameters["_time"].SetValue((float)gameTime.TotalGameTime.TotalSeconds);
         }
 
-        public override void Process(SpriteBatch sb, RenderTarget2D renderTarget)
+        public override void Process(SpriteBatcher sb, RenderTarget2D renderTarget)
         {
             if (waterLevel >= game_context.camera.Position.Y && waterLevel <= game_context.camera.Position.Y + game_context.graphics.Viewport.Height)
             {

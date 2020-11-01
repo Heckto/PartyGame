@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AuxLib;
 
 namespace Game1.GameObjects.Sprite.AnimationEffects
 {
@@ -14,6 +15,6 @@ namespace Game1.GameObjects.Sprite.AnimationEffects
 
         void Update(GameTime gameTime);
 
-        void Draw(SpriteBatch spriteBatch, Texture2D texture, Vector2 actualPosition, Rectangle rectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects flipEffects, float layerDepth);
+        void Draw(SpriteBatcher SpriteBatcher, Texture2D texture, Vector2 actualPosition, Rectangle rectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects flipEffects, float layerDepth);
     }
 }

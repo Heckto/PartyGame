@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
 
 namespace AuxLib.Debug
 {
@@ -11,28 +14,28 @@ namespace AuxLib.Debug
     {
         public float Value;
         public TimeSpan Sample { get; set; }
-        private Stopwatch sw;
+        private readonly Stopwatch sw;
         private int Frames;
 
         public FpsMonitor()
         {
-            this.Sample = TimeSpan.FromSeconds(1);
-            this.Value = 0;
-            this.Frames = 0;
-            this.sw = Stopwatch.StartNew();
+            Sample = TimeSpan.FromSeconds(1);
+            Value = 0;
+            Frames = 0;
+            sw = Stopwatch.StartNew();
         }
 
         public void Update()
         {
-            this.Frames++;
+            Frames++;
             if (sw.Elapsed > Sample)
             {
-                this.Value = (float)(Frames / sw.Elapsed.TotalSeconds);
-                this.sw.Reset();
-                this.sw.Start();
-                this.Frames = 0;
+                Value = (float)(Frames / sw.Elapsed.TotalSeconds);
+                sw.Reset();
+                sw.Start();
+                Frames = 0;
             }
-        }
+        }        
 
     }
 }

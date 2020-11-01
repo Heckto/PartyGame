@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Game1.DataContext;
 using System.IO;
+using AuxLib;
 
 namespace Game1.GameObjects.Graphics.PostProcessing
 {
@@ -44,7 +45,7 @@ namespace Game1.GameObjects.Graphics.PostProcessing
 		/// </summary>
 		/// <param name="source">Source.</param>
 		/// <param name="destination">Destination.</param>
-		public virtual void Process(SpriteBatch sb,RenderTarget2D source, RenderTarget2D destination)
+		public virtual void Process(SpriteBatcher sb,RenderTarget2D source, RenderTarget2D destination)
 		{
 			DrawFullscreenQuad(sb,source, destination, Effect);
 		}
@@ -54,12 +55,12 @@ namespace Game1.GameObjects.Graphics.PostProcessing
 
         }
 
-        public virtual void Process(SpriteBatch sb, Texture2D source, RenderTarget2D destination = null)
+        public virtual void Process(SpriteBatcher sb, Texture2D source, RenderTarget2D destination = null)
         {
             DrawFullscreenQuad(sb, source, destination, Effect);
         }
 
-        public virtual void Process(SpriteBatch sb, RenderTarget2D renderTarget) {
+        public virtual void Process(SpriteBatcher sb, RenderTarget2D renderTarget) {
             DrawFullscreenQuad(sb, renderTarget, null,Effect);
         }
 
@@ -78,7 +79,7 @@ namespace Game1.GameObjects.Graphics.PostProcessing
 		/// <summary>
 		/// helper for drawing a texture into a rendertarget, optionally using a custom shader to apply postprocessing effects.
 		/// </summary>
-		protected void DrawFullscreenQuad(SpriteBatch sb,Texture2D texture, RenderTarget2D renderTarget, Effect effect = null)
+		protected void DrawFullscreenQuad(SpriteBatcher sb,Texture2D texture, RenderTarget2D renderTarget, Effect effect = null)
 		{
             //game_context.graphics.SetRenderTarget(renderTarget);
             sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, effect: effect);
@@ -95,7 +96,7 @@ namespace Game1.GameObjects.Graphics.PostProcessing
 		/// <summary>
 		/// helper for drawing a texture into the current rendertarget, optionally using a custom shader to apply postprocessing effects.
 		/// </summary>
-		protected void DrawFullscreenQuad(SpriteBatch sb)
+		protected void DrawFullscreenQuad(SpriteBatcher sb)
 		{
 			sb.Begin(SpriteSortMode.Deferred,BlendState.AlphaBlend, effect: Effect);
 
@@ -128,7 +129,7 @@ namespace Game1.GameObjects.Graphics.PostProcessing
         /// </summary>
         /// <param name="source">Source.</param>
         /// <param name="destination">Destination.</param>
-        public override void Process(SpriteBatch sb, RenderTarget2D source, RenderTarget2D destination)
+        public override void Process(SpriteBatcher sb, RenderTarget2D source, RenderTarget2D destination)
         {
             DrawFullscreenQuad(sb,source, destination, Effect);
         }

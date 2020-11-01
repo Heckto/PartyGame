@@ -18,8 +18,8 @@ namespace Game1.Screens
 {
     public sealed class OptionsMenuState : BaseGameState, IOptionsState
     {
-        private FocusCamera camera;
-        private SpriteBatch spriteBatch;
+        private FocusCamera<Vector2> camera;
+        private SpriteBatcher SpriteBatcher;
         private SpriteFont font;
         private Rectangle targetRect;
         private MenuComponent Menu;
@@ -52,11 +52,11 @@ namespace Game1.Screens
 
         public override void Draw(GameTime gameTime)
         {            
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-            Primitives.Instance.drawBoxFilled(spriteBatch, targetRect, new Color(Color.Black, 0.5f));
+            SpriteBatcher.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend);
+            SpriteBatcher.DrawBoxFilled(targetRect, new Color(Color.Black, 0.5f));
             Menu.Draw();
 
-            spriteBatch.End();
+            SpriteBatcher.End();
             base.Draw(gameTime);
         }
 
@@ -73,7 +73,7 @@ namespace Game1.Screens
                                              })
             };
             var innerRect = new Rectangle(2 * targetRect.X, 2 * targetRect.Y, (int)(0.9 * targetRect.Width), (int)(0.9 * targetRect.Height));
-            Menu = new MenuComponent(innerRect, Vector2.Zero, spriteBatch, font, items.ToList());
+            Menu = new MenuComponent(innerRect, Vector2.Zero, SpriteBatcher, font, items.ToList());
             Menu.Initialize();
 
             base.Initialize();
@@ -82,7 +82,7 @@ namespace Game1.Screens
         protected override void LoadContent(ContentManager contentManager)
         {
             
-            spriteBatch = OurGame.Services.GetService<SpriteBatch>();
+            SpriteBatcher = OurGame.Services.GetService<SpriteBatcher>();
             font = contentManager.Load<SpriteFont>("Font/DiagnosticFont");
 
             base.LoadContent();

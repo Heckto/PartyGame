@@ -81,16 +81,17 @@ namespace Game1.GameObjects.Obstacles
         public override void Update(GameTime gameTime,Level lvl)
         {
             var r = new Rectangle((int)Transform.Position.X, (int)Transform.Position.Y, (int)colBodySize.Y, (int)colBodySize.X);
-            if (!context.camera.Bounds.Intersects(r))
-                IsAlive = false;           
+            //if (!context.camera.Bounds.Intersects(r))
+              //  IsAlive = false;           
 
             controller.Move(movement);
 
             Transform.Position = ConvertUnits.ToDisplayUnits(CollisionBox.Position);
+            //context.camera.Up
             base.Update(gameTime, lvl);
         }
 
-        public void Draw(SpriteBatch sb)
+        public void Draw(SpriteBatcher sb)
         {
             var flip = (Direction == FaceDirection.Left);
             if (CurrentAnimation != null)

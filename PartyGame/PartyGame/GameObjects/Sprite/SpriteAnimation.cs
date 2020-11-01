@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AuxLib;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -103,11 +104,11 @@ namespace Game1.GameObjects.Sprite
         //    currentEffect = animationEffect;
         //}
 
-        public void Draw(SpriteBatch spriteBatch, SpriteEffects flipEffects, Vector2 position, float rotation, float scale, Color color, AnimationEffect animationEffect)
+        public void Draw(SpriteBatcher SpriteBatcher, SpriteEffects flipEffects, Vector2 position, float rotation, float scale, Color color, AnimationEffect animationEffect)
         {
             //SetAnimationEffect(animationEffect);
 
-            Frames[currentFrame].Draw(spriteBatch, flipEffects, position, rotation, scale, color, animationEffects[currentEffect]);
+            Frames[currentFrame].Draw(SpriteBatcher, flipEffects, position, rotation, scale, color, animationEffects[currentEffect]);
         }
 
         public override string ToString() => $"{AnimationName}-{AnimationState}";

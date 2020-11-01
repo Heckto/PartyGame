@@ -13,7 +13,7 @@ namespace Game1
         protected Vector2 RightVector = new Vector2(1, 0);
         public Category collisionMask;
 
-        public RectangleF skinRect;
+        //public RectangleF skinRect;
 
         protected readonly float skinWidth = ConvertUnits.ToSimUnits(10f);
 

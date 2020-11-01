@@ -13,14 +13,14 @@ namespace Game1.GameObjects.ParticleEffects
 {
     //public static class ParticleExtensions
     //{
-    //    public static void Draw(this SpriteBatch spriteBatch, ParticleEffect effect,ref Matrix mat)
+    //    public static void Draw(this SpriteBatcher SpriteBatcher, ParticleEffect effect,ref Matrix mat)
     //    {
 
     //        for (var i = 0; i < effect.Count; i++)
-    //            spriteBatch.RenderEmitter(effect[i], ref mat);
+    //            SpriteBatcher.RenderEmitter(effect[i], ref mat);
     //    }
 
-    //    public static void RenderEmitter(this SpriteBatch spriteBatch,Emitter emitter, ref Matrix transform)
+    //    public static void RenderEmitter(this SpriteBatcher SpriteBatcher,Emitter emitter, ref Matrix transform)
     //    {
     //        if (emitter.ParticleTexture != null && emitter.ActiveParticlesCount > 0)
     //        {
@@ -34,17 +34,17 @@ namespace Game1.GameObjects.ParticleEffects
 
     //            var blendState = GetBlendState(emitter.BlendMode);
                 
-    //            spriteBatch.Begin(SpriteSortMode.Immediate, blendState, null, null, null, null, transform);
+    //            SpriteBatcher.Begin(SpriteSortMode.Immediate, blendState, null, null, null, null, transform);
 
     //            for (var i = 0; i < emitter.ActiveParticlesCount; i++)
     //            {
     //                var particle = emitter.Particles[i];
 
     //                float scale = particle.Scale / emitter.ParticleTexture.Width;
-    //                spriteBatch.Draw(emitter.ParticleTexture, particle.Position, source, new Color(particle.Colour), particle.Rotation, origin, scale, SpriteEffects.None, 0f);
+    //                SpriteBatcher.Draw(emitter.ParticleTexture, particle.Position, source, new Color(particle.Colour), particle.Rotation, origin, scale, SpriteEffects.None, 0f);
     //            }
 
-    //            spriteBatch.End();
+    //            SpriteBatcher.End();
     //        }
     //    }
 

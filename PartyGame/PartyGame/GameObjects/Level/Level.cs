@@ -9,7 +9,7 @@ using System.Linq;
 using tainicom.Aether.Physics2D.Dynamics;
 using tainicom.Aether.Physics2D.Diagnostics;
 using AuxLib;
-using AuxLib.RandomGeneration;
+using AuxLib.RandomGen;
 using AuxLib.Sound;
 using AuxLib.Camera;
 using Game1.GameObjects.Sprite;
@@ -22,6 +22,7 @@ using Game1.GameObjects.ParticleEffects;
 using Microsoft.Xna.Framework.Content;
 using Game1.Rendering;
 using Game1.GameObjects.Graphics.PostProcessing.PostProcessors;
+using System.Diagnostics;
 
 namespace Game1.GameObjects.Levels
 {
@@ -118,9 +119,9 @@ namespace Game1.GameObjects.Levels
 
             render_target = new RenderTarget2D(context.graphics, context.graphics.Viewport.Width, context.graphics.Viewport.Height,false, SurfaceFormat.Color,DepthFormat.None,0, RenderTargetUsage.PreserveContents);
 
-            //this._postProcessors.Add(new FogPostProcessor(context));
+            this._postProcessors.Add(new FogPostProcessor(context));
 
-            context.camera.Bounds = LevelBounds;
+            context.camera.Limits = LevelBounds;
 
             LevelBounds.Inflate((int)(0.05 * LevelBounds.Width), (int)(0.05 * LevelBounds.Height));
 
@@ -203,10 +204,11 @@ namespace Game1.GameObjects.Levels
             for (var idx = 0; idx < _postProcessors.Count; idx++)
                 _postProcessors[idx].Update(gameTime);
 
+            context.camera.LookAt(player.Transform.Position);
             context.camera.UpdateCamera(gameTime,player.controller.latestVelocity);
         }
 
-        public void Draw(SpriteBatch sb, FocusCamera camera)
+        public void Draw(SpriteBatcher sb, FocusCamera<Vector2> camera)
         {
             context.graphics.SetRenderTarget(render_target);
             foreach (var layer in Layers)
@@ -235,41 +237,34 @@ namespace Game1.GameObjects.Levels
 
         }
 
-        public void DrawDebug(SpriteBatch sb, SpriteFont font, FocusCamera camera)
+        public Matrix getScaledViewMatrix(FocusCamera<Vector2> camera)
         {
+            return
+                Matrix.CreateTranslation(ConvertUnits.ToSimUnits(new Vector3(-camera.Position, 0))) *
 
 
-            var projection = Matrix.CreateOrthographicOffCenter(0f, ConvertUnits.ToSimUnits(sb.GraphicsDevice.Viewport.Width), ConvertUnits.ToSimUnits(sb.GraphicsDevice.Viewport.Height), 0f, 0f, 1f);
+                //Matrix.CreateTranslation(ConvertUnits.ToSimUnits(-new Vector3(-camera.Origin, 0))) *
+                Matrix.CreateRotationZ(camera.Rotation) *
+                Matrix.CreateScale(camera.Zoom);
+                //Matrix.CreateTranslation(ConvertUnits.ToSimUnits(new Vector3(camera.Origin, 0)));
+        }
+
+        public void DrawDebug(SpriteBatcher sb, SpriteFont font, FocusCamera<Vector2> camera)
+        {
             
-            debugView.RenderDebugData(projection, camera.getScaledViewMatrix());
-
+            var projection = Matrix.CreateOrthographicOffCenter(0f, ConvertUnits.ToSimUnits(sb.GraphicsDevice.Viewport.Width), ConvertUnits.ToSimUnits(sb.GraphicsDevice.Viewport.Height), 0f, 0f, 1f);
             var projection2 = Matrix.CreateOrthographicOffCenter(0f, sb.GraphicsDevice.Viewport.Width, sb.GraphicsDevice.Viewport.Height, 0f, 0f, 1f);
-            debugView.BeginCustomDraw(projection2, camera.getViewMatrix());
+
+            debugView.RenderDebugData(projection, getScaledViewMatrix(camera));
+
+            debugView.BeginCustomDraw(projection2, camera.GetViewMatrix());
 
             foreach (var ray in player.controller.castList)
-                debugView.DrawSegment(ray.from, ray.to, Color.Blue);
+                debugView.DrawSegment(ray.from, ray.to, Color.Blue);           
+            
+            debugView.DrawSolidPolygon(camera.getFocusArea(), 4, Color.Red);
 
-            var areaPoints = new Vector2[] {
-                ConvertUnits.ToDisplayUnits(new Vector2(camera.focusArea.left,camera.focusArea.top)),
-                ConvertUnits.ToDisplayUnits(new Vector2(camera.focusArea.right, camera.focusArea.top)),
-                ConvertUnits.ToDisplayUnits(new Vector2(camera.focusArea.right, camera.focusArea.bottom)),
-                ConvertUnits.ToDisplayUnits(new Vector2(camera.focusArea.left, camera.focusArea.bottom))
-            };
-            debugView.DrawSolidPolygon(areaPoints, 4, Color.Red);
-
-            debugView.DrawPoint(ConvertUnits.ToDisplayUnits(camera.focusPosition), 3, Color.White);
-
-            debugView.DrawPoint(camera.Position, 3, Color.Pink);
-
-            var cameraBounds = new Vector2[] {
-                new Vector2(camera.Bounds.Left,camera.Bounds.Top),
-                new Vector2(camera.Bounds.Right, camera.Bounds.Top),
-                new Vector2(camera.Bounds.Right, camera.Bounds.Bottom),
-                new Vector2(camera.Bounds.Left, camera.Bounds.Bottom)
-            };
-
-            debugView.DrawPolygon(cameraBounds, 4, Color.Green);
-
+            debugView.DrawPoint(camera.focusPosition + camera.Origin, 3, Color.White);
             debugView.EndCustomDraw();
         }
 

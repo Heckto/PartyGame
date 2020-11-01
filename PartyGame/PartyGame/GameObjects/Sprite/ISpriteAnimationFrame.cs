@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AuxLib;
 
 namespace Game1.GameObjects.Sprite
 {
@@ -15,6 +16,6 @@ namespace Game1.GameObjects.Sprite
     {
         Vector2 Size { get; }
 
-        void Draw(SpriteBatch spriteBatch, SpriteEffects flipEffects, Vector2 position, float rotation, float scale, Color color, IAnimationEffect animationEffect);
+        void Draw(SpriteBatcher SpriteBatcher, SpriteEffects flipEffects, Vector2 position, float rotation, float scale, Color color, IAnimationEffect animationEffect);
     }
 }

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AuxLib;
 
 namespace Game1.GameObjects.Graphics.PostProcessing.PostProcessors
 {
@@ -25,6 +26,8 @@ namespace Game1.GameObjects.Graphics.PostProcessing.PostProcessors
 
         public void LoadContent(ContentManager content)
         {
+            //byte[] bytecode = File.ReadAllBytes("Content/Effects/Fog.mgfx");
+            //Effect = new Effect(game_context.graphics,bytecode);
 
             Effect = content.Load<Effect>("Effects/Fog");
             fogTarget = new RenderTarget2D(game_context.graphics, game_context.graphics.Viewport.Width, game_context.graphics.Viewport.Height);
@@ -33,11 +36,11 @@ namespace Game1.GameObjects.Graphics.PostProcessing.PostProcessors
         public override void Update(GameTime gameTime)
         {
             Effect.Parameters["_time"].SetValue((float)gameTime.TotalGameTime.TotalSeconds);
-            Effect.Parameters["offset"].SetValue(new Vector2(game_context.camera.Position.X / game_context.camera.Bounds.Width, game_context.camera.Position.Y / game_context.camera.Bounds.Height));
-            Effect.Parameters["res"].SetValue(new Vector2(game_context.camera.Bounds.Width, game_context.camera.Bounds.Height));
+            //Effect.Parameters["_offset"].SetValue(new Vector2(game_context.camera.Position.X / game_context.camera.Bounds.Width, game_context.camera.Position.Y / game_context.camera.Bounds.Height));
+            //Effect.Parameters["res"].SetValue(new Vector2(game_context.camera.Bounds.Width, game_context.camera.Bounds.Height));
         }
 
-        public override void Process(SpriteBatch sb, RenderTarget2D renderTarget)
+        public override void Process(SpriteBatcher sb, RenderTarget2D renderTarget)
         {           
             game_context.graphics.SetRenderTarget(fogTarget);
             game_context.graphics.Clear(Color.Transparent);

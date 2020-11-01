@@ -5,6 +5,7 @@ using System.IO;
 using AuxLib.ScreenManagement.Transitions;
 using AuxLib.Sound;
 using Microsoft.Xna.Framework.Content;
+using AuxLib;
 
 namespace Game1.Screens
 {
@@ -13,7 +14,7 @@ namespace Game1.Screens
         private Texture2D texture;
         private Texture2D logo_texture;
         private Rectangle r1, r2;
-        private SpriteBatch spriteBatch;
+        private SpriteBatcher SpriteBatcher;
 
         private string rootDir;
         
@@ -42,16 +43,16 @@ namespace Game1.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            spriteBatch.Begin();
-            spriteBatch.Draw(texture, r1, Color.White);
-            spriteBatch.Draw(logo_texture, r2, Color.White);            
+            SpriteBatcher.Begin();
+            SpriteBatcher.Draw(texture, r1, Color.White);
+            SpriteBatcher.Draw(logo_texture, r2, Color.White);            
             base.Draw(gameTime);
-            spriteBatch.End();
+            SpriteBatcher.End();
         }
 
         protected override void LoadContent(ContentManager contentManager)
         {
-            spriteBatch = OurGame.Services.GetService<SpriteBatch>();
+            SpriteBatcher = OurGame.Services.GetService<SpriteBatcher>();
             
             
             texture = contentManager.Load<Texture2D>(@"Misc\why");
