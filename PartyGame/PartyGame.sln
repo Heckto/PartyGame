@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartyGame", "PartyGame\Part
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameLib", "GameLib\GameLib.csproj", "{9C863F0D-F5C2-41C0-A5CA-7F345EA3DB3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibTester", "LibTester\LibTester.csproj", "{F1332C1F-C527-4E31-9EB5-08ED88F90E52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibTester", "LibTester\LibTester.csproj", "{F1332C1F-C527-4E31-9EB5-08ED88F90E52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

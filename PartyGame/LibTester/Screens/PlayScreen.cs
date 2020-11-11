@@ -16,91 +16,51 @@ using tainicom.Aether.Physics2D.Dynamics;
 using tainicom.Aether.Physics2D.Diagnostics;
 using MonoGame.Extended.Sprites;
 using System.Windows.Markup;
+using AuxLib.Debug;
 
 namespace LibTester.Screens
 {
     public sealed class PlayScreen : GameState
     {
         private SpriteBatcher spriteBatch;
-        //private SpriteFont font;
-        //private Texture2D tex;
 
-        // The tile map
-        private TiledMap map;
         private Player player;
-        // The renderer for the map
-        private TiledMapRenderer mapRenderer;
+
+        private Level activeLevel;
+        private DebugMonitor debugger;
+
+
         private BoundedCamera<Vector2> camera;
-        private World CollisionWorld;
-        private DebugView debugView;
+        
 
         public PlayScreen(Game game) : base(game)
         {
             camera = new BoundedCamera<Vector2>(game.GraphicsDevice.Viewport);
+            game.Services.AddService(camera);
+
+            debugger = new DebugMonitor(game);
+            debugger.Initialize();
+            game.Services.AddService(debugger);            
+
+            
         }
 
         public override void Initialize()
         {
-            var content = Game.Content;
-            CollisionWorld = new World();
-            debugView = new DebugView(CollisionWorld);
+            var content = Game.Content;            
             LoadContent(content);
         }
 
         protected override void LoadContent(ContentManager contentManager)
         {
-
-            spriteBatch = Game.Services.GetService<SpriteBatcher>();
-            //font = contentManager.Load<SpriteFont>("DialogFont");
-            //tex = contentManager.Load<Texture2D>("test");
-
-            debugView.LoadContent(spriteBatch.GraphicsDevice, contentManager);
-
-            map = contentManager.Load<TiledMap>("Maps/track1");
-
-            createCollisionWorld(map);
-
-            // Create the map renderer
-            mapRenderer = new TiledMapRenderer(GraphicsDevice);
-            var bounds = new Rectangle(0, 0, map.WidthInPixels, map.HeightInPixels);
-            camera.Limits = bounds;
-            mapRenderer.LoadMap(map);
-
-            CreatePlayer(contentManager);
-        }
-
-
-        private void createCollisionWorld(TiledMap map)
-        {            
-            var l = map.GetLayer<TiledMapObjectLayer>("Objectlaag 1");
-            foreach (var obj in l.Objects)
-            { 
-                switch (obj.Type)
-                {
-                    case "Polygon":
-                        {
-                            var polygon = (TiledMapPolygonObject)obj;
-                            for (var idx= 0; idx < polygon.Points.Length - 1; idx++)
-                            {
-                                
-                                var colBody = CollisionWorld.CreateEdge(ConvertUnits.ToSimUnits(polygon.Points[idx] + polygon.Position), ConvertUnits.ToSimUnits(polygon.Points[idx + 1] + polygon.Position));
-                                colBody.SetCollisionCategories(Category.Cat2);
-                            }
-                            break;
-                        }
-                    case "Rectangle":
-                        {
-                            var rect = (TiledMapRectangleObject)obj;
-                            var origin = new Vector2(rect.Size.Width / 2, rect.Size.Height / 2);
-                            var colBody = CollisionWorld.CreateRectangle(ConvertUnits.ToSimUnits(rect.Size.Width), ConvertUnits.ToSimUnits(rect.Size.Height),1, ConvertUnits.ToSimUnits(rect.Position+ origin),rect.Rotation);
-                            colBody.SetCollisionCategories(Category.Cat2);
-                            break;
-                        }
-                }
-            }
-
+            activeLevel = new Level(Game, "Maps/track2");
             
+            spriteBatch = Game.Services.GetService<SpriteBatcher>();
+            CreatePlayer(contentManager, activeLevel.CollisionWorld);
         }
+
+
+        
 
         public override void Update(GameTime gameTime)
         {
@@ -118,52 +78,44 @@ namespace LibTester.Screens
 
 
 
-            base.Update(gameTime);
+            activeLevel.Update(gameTime);
 
             player.Update(gameTime);
 
-            CollisionWorld.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
-            mapRenderer.Update(gameTime);
-            
+            camera.LookAt(player.m_car.Transform.Position);
 
-            
-            camera.LookAt(player.Transform.Position);
+            base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
+
+            activeLevel.Draw(gameTime);
+
             
-            foreach(var layer in map.Layers)
-                mapRenderer.Draw(layer, camera.GetViewMatrix());
-
             spriteBatch.Begin(transformMatrix : camera.GetViewMatrix());
-            player.Draw(spriteBatch);
+            
+            player.Draw(gameTime);
 
-            var vp = spriteBatch.GraphicsDevice.Viewport;
+            
 
-            var Projection = Matrix.CreateOrthographicOffCenter(0f, ConvertUnits.ToSimUnits(vp.Width), ConvertUnits.ToSimUnits(vp.Height), 0f, 0f, 1f);
-            var View = getScaledViewMatrix();
-
-            debugView.RenderDebugData(Projection, View);
             spriteBatch.End();
+
+            if (true)
+                debugger.Draw(gameTime);
+
         }
 
 
-        public Matrix getScaledViewMatrix()
-        {
-            return
-
-                Matrix.CreateTranslation(ConvertUnits.ToSimUnits(new Vector3(-camera.Position, 0))) *
-                Matrix.CreateRotationZ(camera.Rotation) *
-                Matrix.CreateScale(camera.Zoom);
-        }
+        
 
        
 
-        private void CreatePlayer(ContentManager contentManager)
+        private void CreatePlayer(ContentManager contentManager,World world)
         {
-            player = new Player(Game);
-            player.LoadContent(contentManager,CollisionWorld);         
+            player = new Player(Game,world);
+            
+            //player.LoadContent(contentManager, activeLevel.CollisionWorld);         
         }
 
         protected override void UnloadContent()

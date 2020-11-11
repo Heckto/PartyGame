@@ -10,11 +10,10 @@
 
 #-------------------------------- References --------------------------------#
 
-/reference:..\..\..\..\..\.nuget\packages\monogame.extended.content.pipeline\3.8.0\tools\MonoGame.Extended.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
-#begin 4hm5qm.jpg
+#begin Circle.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -24,9 +23,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:4hm5qm.jpg;test.jpg
+/build:Circle.png
 
-#begin DialogFont.png
+#begin CircleBig.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -36,36 +35,28 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:DialogFont.png;DiagnosticsFont.png
+/build:CircleBig.png
 
-#begin DialogFont.spritefont
+#begin CircleHalf.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CircleHalf.png
+
+#begin Courier New.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:DialogFont.spritefont;DiagnosticsFont.spritefont
+/build:Courier New.spritefont
 
-#begin File.spritefont
-/importer:FontDescriptionImporter
-/processor:LocalizedFontProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:File.spritefont;TestFont.spritefont
-
-#begin Font/DiagnosticsFont.xnb
-/copy:Font/DiagnosticsFont.xnb
-
-#begin Maps/track1.tmx
-/importer:TiledMapImporter
-/processor:TiledMapProcessor
-/build:Maps/track1.tmx
-
-#begin Maps/track2.tmx
-/importer:TiledMapImporter
-/processor:TiledMapProcessor
-/build:Maps/track2.tmx
-
-#begin Players/car_black_small_1.png
+#begin Wheel.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -75,5 +66,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Players/car_black_small_1.png;Players/BlackCar.png
+/build:Wheel.png
 

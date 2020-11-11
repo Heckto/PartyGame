@@ -24,9 +24,9 @@ namespace AuxLib.Debug
 
         public override void Initialize()
         {
-            var content = Game.Services.GetService<ContentManager>();
+            var content = Game.Content;
             spriteBatch = Game.Services.GetService<SpriteBatcher>();
-            font = content.Load<SpriteFont>("DiagnosticsFont");
+            font = content.Load<SpriteFont>("Font/DiagnosticsFont");
         }
 
         
@@ -51,13 +51,13 @@ namespace AuxLib.Debug
         public override void Draw(GameTime gameTime)
         {
 
-            const float maxHeight = 18f;
+            const float maxHeight = 20f;
             var itemCnt = debugData.Count();
             if (itemCnt > 0)
             {
                 var vectSize = itemCnt * maxHeight + 3f * maxHeight;
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-                spriteBatch.DrawBoxFilled(new Rectangle(50, 50, 400, (int)vectSize), Color.Black);
+                spriteBatch.DrawBoxFilled(new Rectangle(50, 50, 400, (int)vectSize), new Color(Color.Black,0.5f));
                 var vertIdx = 70;
                 var idx = 0;
                 foreach (var item in debugData)
