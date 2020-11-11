@@ -111,7 +111,7 @@ namespace LibTester
                             for (var idx = 0; idx < polygon.Points.Length - 1; idx++)
                             {
                                 Body colBody;
-                                if (idx < polygon.Points.Length - 1)
+                                if (idx < polygon.Points.Length - 2)
                                     colBody = CollisionWorld.CreateEdge(ConvertUnits.ToSimUnits(polygon.Points[idx] + polygon.Position), ConvertUnits.ToSimUnits(polygon.Points[idx + 1] + polygon.Position));
                                 else                                
                                     colBody = CollisionWorld.CreateEdge(ConvertUnits.ToSimUnits(polygon.Points[polygon.Points.Length - 1] + polygon.Position), ConvertUnits.ToSimUnits(polygon.Points[0] + polygon.Position));                                   
