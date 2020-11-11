@@ -22,6 +22,8 @@ using tainicom.Aether.Physics2D.Collision.Shapes;
 using tainicom.Aether.Physics2D.Common;
 using tainicom.Aether.Physics2D.Dynamics;
 using tainicom.Aether.Physics2D.Dynamics.Joints;
+using Newtonsoft.Json.Schema;
+using MonoGame.Extended.NuclexGui;
 
 namespace LibTester.Controllers
 {
@@ -40,11 +42,6 @@ namespace LibTester.Controllers
         protected readonly Vector2 rightRearWheelPosition = new Vector2(.2f, .2f);
         protected readonly Vector2 leftFrontWheelPosition = new Vector2(-.2f, -0.2f);
         protected readonly Vector2 rightFrontWheelPosition = new Vector2(.2f, -0.2f);
-
-        //protected readonly Vector2 leftRearWheelPosition = new Vector2(-0.64f, 0.865f);
-        //protected readonly Vector2 rightRearWheelPosition = new Vector2(0.64f, 0.865f);
-        //protected readonly Vector2 leftFrontWheelPosition = new Vector2(-0.64f, -0.865f);
-        //protected readonly Vector2 rightFrontWheelPosition = new Vector2(0.64f, -0.865f);
 
         public Car(Game game) : base(game)
         {
@@ -167,6 +164,8 @@ namespace LibTester.Controllers
             GenerateTireTex();
         }
 
+
+
         public void KillOrthogonalVelocity(Body targetBody)
         {
             var up = Vector2.Transform(new Vector2(0, -1), Matrix.CreateRotationZ(targetBody.Rotation));
@@ -276,12 +275,8 @@ namespace LibTester.Controllers
     #endregion
 
     #region Model2
-    public class Car2 : Car
+    public class PlayerCar : Car
     {
-        
-
-        private readonly Vector2 frontAxisPosition = new Vector2(0.0f, -0.2f);
-        private readonly Vector2 rearAxisPosition = new Vector2(0.0f, -0.2f);
 
         private readonly Size2 carSize = new Size2(0.4f, 0.7f);
         private readonly Size2 tireSize = new Size2(0.1f, 0.15f);
@@ -291,7 +286,11 @@ namespace LibTester.Controllers
         float SpeedSteerCorrection = 300f;
         float WeightTransfer = 0.35f;
         float CGHeight = 0.55f;
-        
+
+        float Mass = 1200f;
+        float LinearDamping = 0.5f;
+        float AngularDamping = 0.5f;
+
         float BrakePower = 12000;
         float EBrakePower = 5000;
 
@@ -335,16 +334,8 @@ namespace LibTester.Controllers
         public Axis FrontAxis;
         public Axis BackAxis;
 
-        public Tire FrontLeftTire;
-        public Tire FrontRightTire;
-        public Tire RearLeftTire;
-        public Tire RearRightTire;
-
         private float f_slipangle;
         private float b_slipangle;
-
-        private float f_friction;
-        private float r_friction;
 
         public Engine engine;
 
@@ -359,39 +350,25 @@ namespace LibTester.Controllers
         int i = 0;
 
         private Sprite sprite;
-        private bool Skids = false;
+        private Sprite tireSprite;
 
-        private SkidMarkEffect skids;
+        private bool SkidsActive = false;
+        private readonly SkidMarkEffect skidsParticleEffect;
 
-        public Car2(Game game, World world, Transform2 transform) : base(game)
+        public PlayerCar(Game game, World world, Transform2 transform) : base(game)
         {
             Transform = transform;
 
             var simUnits = ConvertUnits.ToSimUnits(Transform.Position);
             rb = world.CreateRoundedRectangle(carSize.Width,carSize.Height,0.2f,0.2f,4,1, simUnits, MathHelper.ToRadians(Transform.Rotation),BodyType.Dynamic);
-            rb.Mass = 1200;
-            rb.LinearDamping = .5f;
-            rb.AngularDamping = 0.5f;
+            rb.Mass = Mass;
+            rb.LinearDamping = LinearDamping;
+            rb.AngularDamping = AngularDamping;
             
             CenterOfGravity = new Transform2(Vector2.Zero);
 
-            FrontAxis = new Axis(rb, WheelBase, .5f, leftFrontWheelPosition, rightFrontWheelPosition);
-            BackAxis = new Axis(rb, WheelBase, .5f, leftRearWheelPosition, rightRearWheelPosition);
-
-            FrontLeftTire = new Tire(leftFrontWheelPosition);
-            FrontRightTire = new Tire(rightFrontWheelPosition);
-            RearLeftTire = new Tire(leftRearWheelPosition);
-            RearRightTire = new Tire(rightRearWheelPosition);
-
-            float weight = rb.Mass * (DistanceToGc * Gravity);
-            FrontLeftTire.RestingWeight = weight;
-            FrontRightTire.RestingWeight = weight;
-            RearLeftTire.RestingWeight = weight;
-            RearRightTire.RestingWeight = weight;
-
-            //FrontAxis = new Axis(rb, WheelBase, frontAxisPosition, CenterOfGravity.Position);
-            //BackAxis = new Axis(rb, WheelBase, rearAxisPosition, CenterOfGravity.Position);
-
+            FrontAxis = new Axis(rb, WheelBase, .5f, leftFrontWheelPosition, rightFrontWheelPosition,Gravity);
+            BackAxis = new Axis(rb, WheelBase, .5f, leftRearWheelPosition, rightRearWheelPosition,Gravity);
             TrackWidth = Vector2.Distance(leftFrontWheelPosition, rightFrontWheelPosition);
 
             engine = new Engine();
@@ -402,14 +379,34 @@ namespace LibTester.Controllers
             FrontAxis.DistanceToCG *= AxleDistanceCorrection;
             BackAxis.DistanceToCG *= AxleDistanceCorrection;
 
-            //WheelBase = 0.4f;
             Inertia = rb.Mass * InertiaScale;
 
             var text = Game.Content.Load<Texture2D>("Players/BlackCar");
             sprite = new Sprite(text);
 
-            skids = new SkidMarkEffect(Game.Content,Game.GraphicsDevice);
-    }
+            tireSprite = GenerateTireTex();
+
+
+            skidsParticleEffect = new SkidMarkEffect(Game.Content);
+
+        }
+
+        private Sprite GenerateTireTex()
+        {
+            var s = new Vector2(ConvertUnits.ToDisplayUnits(carSize.Width * tireSize.Width), ConvertUnits.ToDisplayUnits(carSize.Height * tireSize.Height));
+
+            var tireTex = new Texture2D(Game.GraphicsDevice, (int)s.X, (int)s.Y);
+            Color[] data = new Color[(int)s.X * (int)s.Y];
+            for (int pixel = 0; pixel < data.Length; pixel++)
+            {
+                //the function applies the color according to the specified pixel
+                data[pixel] = Color.Black;
+            }
+
+            //set the color
+            tireTex.SetData(data);
+            return new Sprite(tireTex);
+        }
 
         public override void Update(GameTime gameTime)
         {
@@ -440,22 +437,22 @@ namespace LibTester.Controllers
             //FrontLeftTire.transform.Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, SteerAngle).Z;
             //FrontRightTire.transform.Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, SteerAngle).Z;
 
-//            FrontAxis.TireRight.transform.Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, SteerAngle).Z;
-//            FrontAxis.TireLeft.transform.Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, SteerAngle).Z;
+            FrontAxis.TireRight.transform.Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, SteerAngle).Z;
+            FrontAxis.TireLeft.transform.Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, SteerAngle).Z;
 
             Vector2 pos = Vector2.Zero;
             if (LocalAcceleration.Length() > 1f)
             {
 
-                float wfl = Math.Max(0, (FrontLeftTire.ActiveWeight - FrontLeftTire.RestingWeight));
-                float wfr = Math.Max(0, (FrontRightTire.ActiveWeight - FrontRightTire.RestingWeight));
-                float wrl = Math.Max(0, (RearLeftTire.ActiveWeight - RearLeftTire.RestingWeight));
-                float wrr = Math.Max(0, (RearRightTire.ActiveWeight - RearRightTire.RestingWeight));
+                float wfl = Math.Max(0, (FrontAxis.TireLeft.ActiveWeight - FrontAxis.TireLeft.RestingWeight));
+                float wfr = Math.Max(0, (FrontAxis.TireRight.ActiveWeight - FrontAxis.TireRight.RestingWeight));
+                float wrl = Math.Max(0, (BackAxis.TireLeft.ActiveWeight - BackAxis.TireLeft.RestingWeight));
+                float wrr = Math.Max(0, (BackAxis.TireRight.ActiveWeight - BackAxis.TireRight.RestingWeight));
 
-                pos = (FrontLeftTire.transform.Position) * wfl +
-                    (FrontRightTire.transform.Position) * wfr +
-                    (RearLeftTire.transform.Position) * wrl +
-                    (RearRightTire.transform.Position) * wrr;
+                pos = (FrontAxis.TireLeft.transform.Position) * wfl +
+                    (FrontAxis.TireRight.transform.Position) * wfr +
+                    (BackAxis.TireLeft.transform.Position) * wrl +
+                    (BackAxis.TireRight.transform.Position) * wrr;
 
                 float weightTotal = wfl + wfr + wrl + wrr;
 
@@ -463,7 +460,7 @@ namespace LibTester.Controllers
                 {
                     pos /= weightTotal;
                     pos.Normalize();
-                    pos.X = Math.Clamp(pos.X, -0.4f, 0.4f);
+                    pos.X = Math.Clamp(pos.X, -0.2f, 0.2f);
                 }
                 else
                 {
@@ -475,12 +472,14 @@ namespace LibTester.Controllers
             CenterOfGravity.Position = Vector2.Lerp(CenterOfGravity.Position, pos, 0.1f);
 
 
+            SkidsActive = false;
 
             // Skidmarks
             if (Math.Abs(LocalAcceleration.Y) > 18 || EBrake == 1)
             {
-                skids.Trigger(ConvertUnits.ToDisplayUnits(rb.GetWorldPoint(leftRearWheelPosition)));
-                skids.Trigger(ConvertUnits.ToDisplayUnits(rb.GetWorldPoint(rightRearWheelPosition)));
+                SkidsActive = true;
+                skidsParticleEffect.Trigger(ConvertUnits.ToDisplayUnits(rb.GetWorldPoint(leftRearWheelPosition)));
+                skidsParticleEffect.Trigger(ConvertUnits.ToDisplayUnits(rb.GetWorldPoint(rightRearWheelPosition)));
             }
 
             // Automatic transmission
@@ -494,7 +493,7 @@ namespace LibTester.Controllers
             i++;
 
 
-            skids.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            skidsParticleEffect.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             FixedUpdate(gameTime);
         }
@@ -507,53 +506,33 @@ namespace LibTester.Controllers
             Up = Vector2.Transform(new Vector2(0, -1), Matrix.CreateRotationZ(rb.Rotation));
 
             Velocity = rb.LinearVelocity;
-
-            //var sin = MathF.Sin(HeadingAngle);
-            //var cos = -MathF.Cos(HeadingAngle);
-
             var rotationMatrix = Matrix.CreateRotationZ(HeadingAngle - MathHelper.ToRadians(90));
-
-            LocalVelocity = Vector2.Transform(Velocity,Matrix.Invert(rotationMatrix));
             // Get local velocity
-            //LocalVelocity.X = cos * Velocity.Y + sin * Velocity.X;
-            //LocalVelocity.Y = -sin * Velocity.Y + cos * Velocity.X;
+            LocalVelocity = Vector2.Transform(Velocity,Matrix.Invert(rotationMatrix));
 
             // Weight transfer
             float transferX = WeightTransfer * LocalAcceleration.X * CGHeight / WheelBase;
             float transferY = WeightTransfer * LocalAcceleration.Y * CGHeight / TrackWidth * 2;        //exagerate the weight transfer on the y-axis
-
             
             // Weight on each axle
             float weightFront = rb.Mass * (DistanceToGc * Gravity - transferX);
             float weightRear = rb.Mass * (DistanceToGc * Gravity + transferX);
 
             // Weight on each tire
-            FrontLeftTire.ActiveWeight = weightFront - transferY;
-            FrontRightTire.ActiveWeight = weightFront + transferY;
-            RearLeftTire.ActiveWeight = weightRear - transferY;
-            RearRightTire.ActiveWeight = weightRear + transferY;
+            FrontAxis.TireLeft.ActiveWeight = weightFront - transferY;
+            FrontAxis.TireRight.ActiveWeight = weightFront + transferY;
+            BackAxis.TireLeft.ActiveWeight = weightRear - transferY;
+            BackAxis.TireRight.ActiveWeight = weightRear + transferY;
 
             // Velocity of each tire
-            FrontLeftTire.AngularVelocity = DistanceToGc * AngularVelocity;
-            FrontRightTire.AngularVelocity = DistanceToGc * AngularVelocity;
-            RearLeftTire.AngularVelocity = -DistanceToGc * AngularVelocity;
-            RearRightTire.AngularVelocity = -DistanceToGc * AngularVelocity;
+            FrontAxis.TireLeft.AngularVelocity = DistanceToGc * AngularVelocity;
+            FrontAxis.TireRight.AngularVelocity = DistanceToGc * AngularVelocity;
+            BackAxis.TireLeft.AngularVelocity = -DistanceToGc * AngularVelocity;
+            BackAxis.TireRight.AngularVelocity = -DistanceToGc * AngularVelocity;
 
             // Math Sign UNITY / C# ????
-            
-            //if (LocalVelocity.X == 0)
-            //    ass = 1;
-            
-            // Slip angle
-
-            var frontAxisAngularVelocity = (FrontLeftTire.AngularVelocity + FrontRightTire.AngularVelocity) / 2f;
-            var rearAxisAngularVelocity = (RearLeftTire.AngularVelocity + RearRightTire.AngularVelocity) / 2f;
-
-            // HIER !!!
-
-            var sign = Math.Sign(LocalVelocity.X);
-            f_slipangle = MathF.Atan2(LocalVelocity.Y + frontAxisAngularVelocity, Math.Abs(LocalVelocity.X)) - sign * SteerAngle;
-            b_slipangle = MathF.Atan2(LocalVelocity.Y + rearAxisAngularVelocity, Math.Abs(LocalVelocity.X));
+            f_slipangle = MathF.Atan2(LocalVelocity.Y + FrontAxis.AngularVelocity, Math.Abs(LocalVelocity.X)) - Math.Sign(LocalVelocity.X) * SteerAngle;
+            b_slipangle = MathF.Atan2(LocalVelocity.Y + BackAxis.AngularVelocity, Math.Abs(LocalVelocity.X));
 
 
             // Brake and Throttle power
@@ -561,36 +540,31 @@ namespace LibTester.Controllers
             float activeThrottle = (Throttle * engine.GetTorque(rb)) * (engine.GearRatio * engine.EffectiveGearRatio);
 
             // Torque of each tire (rear wheel drive)
-            RearLeftTire.Torque = activeThrottle / RearLeftTire.Radius;
-            RearRightTire.Torque = activeThrottle / RearRightTire.Radius;
+            BackAxis.TireLeft.Torque = activeThrottle / BackAxis.TireLeft.Radius;
+            BackAxis.TireRight.Torque = activeThrottle / BackAxis.TireRight.Radius;
 
             // Grip and Friction of each tire
-            FrontLeftTire.Grip = TotalTireGripFront * (1.0f - EBrake * (1.0f - EBrakeGripRatioFront));
-            FrontRightTire.Grip = TotalTireGripFront * (1.0f - EBrake * (1.0f - EBrakeGripRatioFront));
-            RearLeftTire.Grip = TotalTireGripRear * (1.0f - EBrake * (1.0f - EBrakeGripRatioRear));
-            RearRightTire.Grip = TotalTireGripRear * (1.0f - EBrake * (1.0f - EBrakeGripRatioRear));
+            FrontAxis.TireLeft.Grip = TotalTireGripFront * (1.0f - EBrake * (1.0f - EBrakeGripRatioFront));
+            FrontAxis.TireRight.Grip = TotalTireGripFront * (1.0f - EBrake * (1.0f - EBrakeGripRatioFront));
+            BackAxis.TireLeft.Grip = TotalTireGripRear * (1.0f - EBrake * (1.0f - EBrakeGripRatioRear));
+            BackAxis.TireRight.Grip = TotalTireGripRear * (1.0f - EBrake * (1.0f - EBrakeGripRatioRear));
 
-            FrontLeftTire.FrictionForce = MathHelper.Clamp(-CornerStiffnessFront * f_slipangle, -FrontLeftTire.Grip, FrontLeftTire.Grip) * FrontLeftTire.ActiveWeight;
-            FrontRightTire.FrictionForce = MathHelper.Clamp(-CornerStiffnessFront * f_slipangle, -FrontRightTire.Grip, FrontRightTire.Grip) * FrontRightTire.ActiveWeight;
-            RearLeftTire.FrictionForce = MathHelper.Clamp(-CornerStiffnessRear * b_slipangle, -RearLeftTire.Grip, RearLeftTire.Grip) * RearLeftTire.ActiveWeight;
-            RearRightTire.FrictionForce = MathHelper.Clamp(-CornerStiffnessRear * b_slipangle, -RearRightTire.Grip, RearRightTire.Grip) * RearRightTire.ActiveWeight;
+            FrontAxis.TireLeft.FrictionForce = MathHelper.Clamp(-CornerStiffnessFront * f_slipangle, -FrontAxis.TireLeft.Grip, FrontAxis.TireLeft.Grip) * FrontAxis.TireLeft.ActiveWeight;
+            FrontAxis.TireRight.FrictionForce = MathHelper.Clamp(-CornerStiffnessFront * f_slipangle, -FrontAxis.TireRight.Grip, FrontAxis.TireRight.Grip) * FrontAxis.TireRight.ActiveWeight;
+            BackAxis.TireLeft.FrictionForce = MathHelper.Clamp(-CornerStiffnessRear * b_slipangle, -BackAxis.TireLeft.Grip, BackAxis.TireLeft.Grip) * BackAxis.TireLeft.ActiveWeight;
+            BackAxis.TireRight.FrictionForce = MathHelper.Clamp(-CornerStiffnessRear * b_slipangle, -BackAxis.TireRight.Grip, BackAxis.TireRight.Grip) * BackAxis.TireRight.ActiveWeight;
+         
 
-
-            var b_torque = (RearLeftTire.Torque + RearRightTire.Torque) / 2f;
             // Forces
-            float tractionForceX = b_torque - activeBrake * Math.Sign(LocalVelocity.X);
-            //float tractionForceX = b_torque - activeBrake * ass;
+            float tractionForceX = BackAxis.Torque - activeBrake * Math.Sign(LocalVelocity.X);
             float tractionForceY = 0;
 
             float dragForceX = -RollingResistance * LocalVelocity.X - AirResistance * LocalVelocity.X * Math.Abs(LocalVelocity.X);
             float dragForceY = -RollingResistance * LocalVelocity.Y - AirResistance * LocalVelocity.Y * Math.Abs(LocalVelocity.Y);
 
-            
-            f_friction = (FrontLeftTire.FrictionForce + FrontRightTire.FrictionForce) / 2f;
-            r_friction = (RearLeftTire.FrictionForce + RearRightTire.FrictionForce) / 2f;
 
             float totalForceX = dragForceX + tractionForceX;
-            float totalForceY = dragForceY + tractionForceY + MathF.Cos(SteerAngle) * f_friction + r_friction;
+            float totalForceY = dragForceY + tractionForceY + MathF.Cos(SteerAngle) * FrontAxis.FrictionForce + BackAxis.FrictionForce;
 
             //adjust Y force so it levels out the car heading at high speeds
             if (AbsoluteVelocity > 10)
@@ -609,17 +583,13 @@ namespace LibTester.Controllers
             LocalAcceleration.Y = totalForceY / rb.Mass;
 
             Acceleration = Vector2.Transform(LocalAcceleration, rotationMatrix);
-            
+            // Velocity and speed            
             Velocity += Acceleration * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            // Velocity and speed
-            //Velocity.X += Acceleration.X * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //Velocity.Y += Acceleration.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             AbsoluteVelocity = Velocity.Length();
 
             // Angular torque of car
-            float angularTorque = (f_friction * DistanceToGc) - (r_friction * DistanceToGc);
+            float angularTorque = (FrontAxis.FrictionForce * DistanceToGc) - (BackAxis.FrictionForce * DistanceToGc);
 
             // Car will drift away at low speeds
             if (AbsoluteVelocity < 0.5f && activeThrottle == 0)
@@ -650,19 +620,10 @@ namespace LibTester.Controllers
 
 
             if (SteerAngle != 0)
-                HeadingAngle += AngularVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            
-
-            // AngularVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-
+                HeadingAngle += AngularVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds;           
 
             rb.LinearVelocity = Velocity;
-            //rb.LinearVelocity = Vector2.Zero;
-            //rb.AngularVelocity = AngularVelocity;
-            //rb.AngularVelocity = AngularVelocity;
             rb.Rotation = HeadingAngle;
-            //rb.AngularVelocity = 0.0f;
 
             Transform.Position = ConvertUnits.ToDisplayUnits(rb.Position);
             Transform.Rotation = rb.Rotation;
@@ -681,10 +642,6 @@ namespace LibTester.Controllers
         {           
 
             float steer = 0;
-            //if (Math.Abs(steerInput) < 0.001f)
-            //{
-            //    return 0;
-            //}
 
             if (Math.Abs(steerInput) > 0.001f)
             {
@@ -733,29 +690,26 @@ namespace LibTester.Controllers
             debugger.AddDebugValue("TrackWidth", TrackWidth.ToString());
             debugger.AddDebugValue("WheelBase", WheelBase.ToString());
 
-            debugger.AddDebugValue("TireFL Weight", FrontLeftTire.ActiveWeight.ToString());
-            debugger.AddDebugValue("TireFR Weight", FrontRightTire.ActiveWeight.ToString());
-            debugger.AddDebugValue("TireRL Weight", RearLeftTire.ActiveWeight.ToString());
-            debugger.AddDebugValue("TireRR Weight", RearRightTire.ActiveWeight.ToString());
+            debugger.AddDebugValue("TireFL Weight", FrontAxis.TireLeft.ActiveWeight.ToString());
+            debugger.AddDebugValue("TireFR Weight", FrontAxis.TireRight.ActiveWeight.ToString());
+            debugger.AddDebugValue("TireRL Weight", BackAxis.TireLeft.ActiveWeight.ToString());
+            debugger.AddDebugValue("TireRR Weight", BackAxis.TireRight.ActiveWeight.ToString());
 
-            debugger.AddDebugValue("TireFL Friction", FrontLeftTire.FrictionForce.ToString());
-            debugger.AddDebugValue("TireFR Friction", FrontRightTire.FrictionForce.ToString());
-            debugger.AddDebugValue("TireRL Friction", RearLeftTire.FrictionForce.ToString());
-            debugger.AddDebugValue("TireRR Friction", RearRightTire.FrictionForce.ToString());
+            debugger.AddDebugValue("TireFL Friction", FrontAxis.TireLeft.FrictionForce.ToString());
+            debugger.AddDebugValue("TireFR Friction", FrontAxis.TireRight.FrictionForce.ToString());
+            debugger.AddDebugValue("TireRL Friction", BackAxis.TireLeft.FrictionForce.ToString());
+            debugger.AddDebugValue("TireRR Friction", BackAxis.TireRight.FrictionForce.ToString());
 
-            debugger.AddDebugValue("TireFL Grip", FrontLeftTire.Grip.ToString());
-            debugger.AddDebugValue("TireFR Grip", FrontRightTire.Grip.ToString());
-            debugger.AddDebugValue("TireRL Grip", RearLeftTire.Grip.ToString());
-            debugger.AddDebugValue("TireRR Grip", RearRightTire.Grip.ToString());
+            debugger.AddDebugValue("TireFL Grip", FrontAxis.TireLeft.Grip.ToString());
+            debugger.AddDebugValue("TireFR Grip", FrontAxis.TireRight.Grip.ToString());
+            debugger.AddDebugValue("TireRL Grip", BackAxis.TireLeft.Grip.ToString());
+            debugger.AddDebugValue("TireRR Grip", BackAxis.TireRight.Grip.ToString());
             
             debugger.AddDebugValue("AxleF SlipAngle", f_slipangle.ToString());
             debugger.AddDebugValue("AxleR SlipAngle", b_slipangle.ToString());
 
-//            debugger.AddDebugValue("AxleF Torque", FrontAxis.Torque.ToString());
-            //debugger.AddDebugValue("AxleR Torque", BackAxis.Torque.ToString());
-
             debugger.AddDebugValue("CG", CenterOfGravity.ToString());
-            debugger.AddDebugValue("Skids", Skids.ToString());
+            debugger.AddDebugValue("Skids", SkidsActive.ToString());
 
             debugger.AddDebugValue("Body Rotation", rb.Rotation);
             debugger.AddDebugValue("Body Speed", rb.LinearVelocity);
@@ -764,11 +718,22 @@ namespace LibTester.Controllers
 
         }
 
+        public void Draw(SpriteBatcher sb)
+        {
+            sb.Draw(skidsParticleEffect);
+
+            sb.Draw(tireSprite, ConvertUnits.ToDisplayUnits(rb.GetWorldPoint(FrontAxis.TireLeft.transform.Position)), rb.Rotation + FrontAxis.TireLeft.transform.Rotation);
+            sb.Draw(tireSprite, ConvertUnits.ToDisplayUnits(rb.GetWorldPoint(FrontAxis.TireRight.transform.Position)), rb.Rotation + FrontAxis.TireRight.transform.Rotation);
+            sb.Draw(tireSprite, ConvertUnits.ToDisplayUnits(rb.GetWorldPoint(BackAxis.TireLeft.transform.Position)), rb.Rotation);
+            sb.Draw(tireSprite, ConvertUnits.ToDisplayUnits(rb.GetWorldPoint(BackAxis.TireRight.transform.Position)), rb.Rotation);
+            sb.Draw(sprite, Transform.Position, Transform.Rotation);
+
+            if (true)
+                DrawDebug(sb);
+        }
+
         public override void DrawDebug(SpriteBatcher sb)
         {
-            sb.Draw(skids);
-            //sb.Draw(sprite, Transform.Position, Transform.Rotation,new Vector2(3.375f,3.2f));
-            sb.Draw(sprite, Transform.Position, Transform.Rotation);
             sb.DrawPoint(ConvertUnits.ToDisplayUnits(rb.GetWorldPoint((CenterOfGravity.Position))), Color.Red, 3);
             sb.DrawLine(Transform.Position, Transform.Position + rb.LinearVelocity * 20, Color.Green, 2);
             sb.DrawLine(Transform.Position, Transform.Position + LocalVelocity * 20, Color.Blue, 2);
@@ -776,118 +741,6 @@ namespace LibTester.Controllers
         }
 
         #endregion
-
-#if SIMPLE
-        public override void Update(GameTime gameTime)
-        {
-            const float maxSpeed = 10;
-            const float braking = 0.5f;
-            const float acceleration = 0.5f;
-            const float steering = 0.1f;
-            const float drag = 0.05f;
-
-            var h = -Input.GamePads[0].ThumbSticks.Left.X;
-            var v = 0.0f;
-            if (Input.IsPressed(0, Microsoft.Xna.Framework.Input.Buttons.A, Microsoft.Xna.Framework.Input.Keys.Up))
-                v = 1.0f;
-            if (Input.IsPressed(0, Microsoft.Xna.Framework.Input.Buttons.B, Microsoft.Xna.Framework.Input.Keys.Down))
-                v = -1.0f;
-
-            var rot = rb.Rotation - (h * steering);
-            rb.Rotation = rot;
-            // acceleration/braking
-
-            var transformed = Vector2.Transform(new Vector2(0, -1), Matrix.CreateRotationZ(rb.Rotation));
-
-            float velocity = rb.LinearVelocity.Length();
-            if (v > 0.01f)
-            {
-                velocity += v * acceleration;
-
-            }
-            else if (v < -0.01f)
-            {
-                velocity += v * braking;
-            }
-
-            if (velocity > 0)
-                velocity -= drag;
-            // apply car movement
-
-            velocity = MathHelper.Clamp(velocity, -maxSpeed, maxSpeed);
-
-            rb.LinearVelocity = (transformed * velocity);
-            rb.AngularVelocity = 0.0f;
-
-
-
-            
-        }
-#endif
-
-#if COMPLEX
-        public override void Update(GameTime gameTime)
-        {
-            const float acceleration = 1500;
-            const float steering = 3;
-            float h = -Input.GamePads[0].ThumbSticks.Left.X;
-            float v = 0.0f;
-            if (Input.IsPressed(0, Microsoft.Xna.Framework.Input.Buttons.A, Microsoft.Xna.Framework.Input.Keys.Up))
-                v = 1.0f;
-            if (Input.IsPressed(0, Microsoft.Xna.Framework.Input.Buttons.B, Microsoft.Xna.Framework.Input.Keys.Down))
-                v = -1.0f;
-
-
-            var transformed = Vector2.Transform(new Vector2(0, -1), Matrix.CreateRotationZ(rb.Rotation));
-            Vector2 speed = transformed * (v * acceleration);
-            rb.ApplyForce(speed);
-
-            float direction = Vector2.Dot(rb.LinearVelocity, transformed);
-
-
-            if (direction > 0.0f)
-            {
-
-                rb.Rotation += h * steering * (rb.LinearVelocity.Length() / 5.0f);
-                //rb.ApplyTorque((-h * steering) * (rb.LinearVelocity.Length() / 10.0f));
-
-            }
-            else
-            {
-                rb.Rotation -= h * steering * (rb.LinearVelocity.Length() / 5.0f);
-                //rb.ApplyTorque((h * steering) * (rb.LinearVelocity.Length() / 10.0f));
-            }
-
-
-            Vector2 forward = new Vector2(0.0f, -0.5f);
-            float steeringRightAngle;
-            if (rb.AngularVelocity > 0)
-            {
-                steeringRightAngle = -90;
-            }
-            else
-            {
-                steeringRightAngle = 90;
-            }
-
-            var ass = Quaternion.CreateFromAxisAngle(Vector3.Forward, steeringRightAngle);
-
-            //Quaternion.A
-            //Quaternion.CreateFromYawPitchRoll(0, 0, steeringRightAngle).Z;
-            Vector2 rightAngleFromForward = new Vector2(ass.X, ass.Y) * forward;
-            ////Debug.DrawLine((Vector2)rb.Position, (Vector2)rb.GetWorldPoint(rightAngleFromForward), Color.Green);
-
-            
-            float driftForce = Vector2.Dot(rb.LinearVelocity, rb.GetWorldVector(Vector2.Normalize(rightAngleFromForward + rb.Position)));
-
-            Vector2 relativeForce = (Vector2.Normalize(rightAngleFromForward) * -1.0f) * (driftForce * 10.0f);
-
-
-            ////Debug.DrawLine((Vector2)rb.Position, (Vector2)rb.GetWorldPoint(relativeForce), Color.Red);
-
-            rb.ApplyForce(rb.GetWorldVector(relativeForce));
-        }
-#endif
     }
 
 }

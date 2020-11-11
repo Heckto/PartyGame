@@ -65,6 +65,23 @@
 /processor:TiledMapProcessor
 /build:Maps/track2.tmx
 
+#begin Maps/track3.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:Maps/track3.tmx
+
+#begin Particles/Square.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Particles/Square.png
+
 #begin Players/car_black_small_1.png
 /importer:TextureImporter
 /processor:TextureProcessor

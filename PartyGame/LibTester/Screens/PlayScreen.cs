@@ -17,6 +17,8 @@ using tainicom.Aether.Physics2D.Diagnostics;
 using MonoGame.Extended.Sprites;
 using System.Windows.Markup;
 using AuxLib.Debug;
+using MonoGame.Extended;
+using LibTester.Controllers;
 
 namespace LibTester.Screens
 {
@@ -24,7 +26,7 @@ namespace LibTester.Screens
     {
         private SpriteBatcher spriteBatch;
 
-        private Player player;
+        private PlayerCar player;
 
         private Level activeLevel;
         private DebugMonitor debugger;
@@ -53,10 +55,10 @@ namespace LibTester.Screens
 
         protected override void LoadContent(ContentManager contentManager)
         {
-            activeLevel = new Level(Game, "Maps/track2");
-            
+            activeLevel = new Level(Game, "Maps/track3");
+
             spriteBatch = Game.Services.GetService<SpriteBatcher>();
-            CreatePlayer(contentManager, activeLevel.CollisionWorld);
+            CreatePlayer(contentManager, activeLevel);
         }
 
 
@@ -82,7 +84,7 @@ namespace LibTester.Screens
 
             player.Update(gameTime);
 
-            camera.LookAt(player.m_car.Transform.Position);
+            camera.LookAt(player.Transform.Position);
 
             base.Update(gameTime);
         }
@@ -95,14 +97,19 @@ namespace LibTester.Screens
             
             spriteBatch.Begin(transformMatrix : camera.GetViewMatrix());
             
-            player.Draw(gameTime);
+
+            player.Draw(spriteBatch);
 
             
 
             spriteBatch.End();
 
             if (true)
+            {
                 debugger.Draw(gameTime);
+                
+                
+            }
 
         }
 
@@ -111,9 +118,17 @@ namespace LibTester.Screens
 
        
 
-        private void CreatePlayer(ContentManager contentManager,World world)
+        private void CreatePlayer(ContentManager contentManager,Level level)
         {
-            player = new Player(Game,world);
+            var startPos = Vector2.Zero;
+            level.tryGetMapProperty<Vector2>("StartPos", out startPos);
+
+            var startRotation = 0f;
+            level.tryGetMapProperty<float>("StartRotation", out startRotation);
+
+            var transform = new Transform2(startPos, startRotation);
+
+            player = new PlayerCar(Game, level.CollisionWorld, transform);
             
             //player.LoadContent(contentManager, activeLevel.CollisionWorld);         
         }

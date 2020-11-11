@@ -20,12 +20,14 @@ namespace LibTester
 
         private BoundedCamera<Vector2> camera;
 
-        private TiledMap map;
+        public TiledMap map;
 
         private TiledMapRenderer mapRenderer;
 
         public World CollisionWorld;
         private DebugView debugView;
+
+        public Dictionary<string, object> Properties;
 
 
         public Level(Game game, string lvl) : base(game)
@@ -45,6 +47,8 @@ namespace LibTester
             spriteBatch = Game.Services.GetService<SpriteBatcher>();
 
             camera = Game.Services.GetService<BoundedCamera<Vector2>>();
+
+            
         }
 
         protected override void LoadContent()
@@ -59,6 +63,37 @@ namespace LibTester
             mapRenderer.LoadMap(map);
 
             CreateCollisionWorld(map);
+
+            LoadProperties();
+        }
+
+        private void LoadProperties()
+        {
+            Properties = new Dictionary<string, object>();
+
+            foreach(var item in map.Properties)
+            {
+                if (item.Key is "StartPos")
+                {
+                    var pos = item.Value.Split("|");
+                    if (pos.Length == 3)
+                    {
+                        Properties.Add("StartPos", new Vector2(Convert.ToSingle(pos[0]), Convert.ToSingle(pos[1])));
+                        Properties.Add("StartRotation", Convert.ToSingle(pos[2]));
+                    }
+                }
+            }
+        }
+
+        public bool tryGetMapProperty<T>(string name,out T property)
+        {
+            if (Properties.ContainsKey(name))
+            {
+                property = (T)Properties[name];
+                return true;
+            }
+            property = default(T);
+            return false;
         }
 
         
@@ -75,10 +110,16 @@ namespace LibTester
                             var polygon = (TiledMapPolygonObject)obj;
                             for (var idx = 0; idx < polygon.Points.Length - 1; idx++)
                             {
-
-                                var colBody = CollisionWorld.CreateEdge(ConvertUnits.ToSimUnits(polygon.Points[idx] + polygon.Position), ConvertUnits.ToSimUnits(polygon.Points[idx + 1] + polygon.Position));
+                                Body colBody;
+                                if (idx < polygon.Points.Length - 1)
+                                    colBody = CollisionWorld.CreateEdge(ConvertUnits.ToSimUnits(polygon.Points[idx] + polygon.Position), ConvertUnits.ToSimUnits(polygon.Points[idx + 1] + polygon.Position));
+                                else                                
+                                    colBody = CollisionWorld.CreateEdge(ConvertUnits.ToSimUnits(polygon.Points[polygon.Points.Length - 1] + polygon.Position), ConvertUnits.ToSimUnits(polygon.Points[0] + polygon.Position));                                   
                                 colBody.SetCollisionCategories(Category.Cat2);
                             }
+
+                            
+
                             break;
                         }
                     case "Rectangle":

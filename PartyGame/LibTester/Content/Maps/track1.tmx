@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="128" tileheight="128" infinite="0" nextlayerid="7" nextobjectid="17">
+ <properties>
+  <property name="StartPos" value="1600|1600|90"/>
+ </properties>
  <tileset firstgid="1" source="Weg1.tsx"/>
  <tileset firstgid="91" source="grass.tsx"/>
  <layer id="3" name="Bodem" width="50" height="50">

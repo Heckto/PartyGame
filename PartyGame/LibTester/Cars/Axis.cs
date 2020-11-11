@@ -1,8 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoGame.Extended;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using tainicom.Aether.Physics2D.Dynamics;
 
 namespace LibTester.Controllers
@@ -37,7 +33,7 @@ namespace LibTester.Controllers
 		public Tire TireLeft { get; private set; }
 		public Tire TireRight { get; private set; }
 
-		public Axis(Body rb, float wheelBase, float distanceToCG, Vector2 left,Vector2 right)
+		public Axis(Body rb, float wheelBase, float distanceToCG, Vector2 left,Vector2 right,float Gravity)
 		{			
 			DistanceToCG = distanceToCG;
 
@@ -46,7 +42,7 @@ namespace LibTester.Controllers
 			TireLeft = new Tire(left);
 			TireRight = new Tire(right);
 
-			float weight = rb.Mass * (WeightRatio * -rb.World.Gravity.Y);
+			float weight = rb.Mass * (WeightRatio * Gravity);
 			TireLeft.RestingWeight = weight;
 			TireRight.RestingWeight = weight;
 		}
